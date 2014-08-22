@@ -1,4 +1,14 @@
-//  PERFORMING A DEFINITION OF GTE's OIL's SYSTEMS CHARACTERISTICS
+//  PERFORMING A DEFINITION OF GTE's and OIL's SYSTEMS CHARACTERISTICS
+
+function date_time_str = getDateTimeString()
+//********************************************************************
+// Preparing the string in the format: "year.month.day_hour:min:sec" *
+//********************************************************************
+  date_time_int = int(datevec(now()));
+  date_time_str = sprintf("%i.%i.%i_%i:%i:%i", date_time_int(1), date_time_int(2),..
+                                               date_time_int(3), date_time_int(4),..
+                                               date_time_int(5), date_time_int(6));
+endfunction
 
 tic;
 xdel(winsid());
@@ -10,7 +20,6 @@ printf("*********************\n");
 //  INITIAL DATA
 sheep = 2;                 // Sheep number
 board = 2;                 // Board: 1 - right, 2 - left
-variant = 1;               // Variant of the characteristics (for binding results in txt and image types)
 
 sectorLength = 900;        // Length of splitting sectors
 sectorShift = 300;         // Shift of sector sectorLength in every main cycle iteration
@@ -207,15 +216,16 @@ printf("[INFO]: Characteristics was defined. Steady mode points quantity: %i\n",
 //      SHOW RESULTS
 //  Show results in console
 //printf("RESULTS:\n");
+str_datetime = getDateTimeString();
 strTitle = "sheep = " + string(sheep) + ", board = " + string(board) + "\nsectorLength = " + string(sectorLength) + ..
-           ", sectorShift = " + string(sectorShift) + "\nvariant = " + string(variant) + "\n";
+           ", sectorShift = " + string(sectorShift) + "\ndate_time = " + str_datetime + "\n";
 //printf("\n%s\n", strTitle);
 
 //  Graphics plot
 for t = 1 : paramsCount - 1
   strImagesTitle = 'd' + t_name(t) + ' = f(Ngte)';
   hWin = scf(t); plot2d(Ngte_steadyAllSort, dtm_steadyAllSort(:, t), -9); xgrid; 
-  title(strImagesTitle + ',  variant = ' + string(variant), 'fontsize', 4); // steady mode points
+  title(strImagesTitle + ',  ' + str_datetime, 'fontsize', 4); // steady mode points
   hWin.figure_name = strImagesTitle;
 
   //  Plot the approximate line

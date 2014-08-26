@@ -28,7 +28,7 @@ UGt_strange = 10;         // Settings Gt strange for defining the steady modes o
 Un2_xx = 5500;            // Settings XX by n2 parameter for defining the steady modes of GTE's work
 
 exportResToTxtFile  = 1;  // Export the oil's characteristics points values in a text file: 1 - perform, 0 - don't perform
-exportResToImgFiles = 0;  // Export plotted the oil's characters points values in a graphics files with "png" extension:
+exportResToImgFiles = 1;  // Export plotted the oil's characters points values in a graphics files with "png" extension:
                           // 1 - perform, 0 - don't perform
 
 // The initial characteristics Ngte = f(P22) from a set of thermodynamics characteristics
@@ -42,7 +42,7 @@ index_gte_in = 1;
 index_per = 2;  index_tkvd = 3;  index_tnd = 4;  index_tv = 5;  index_gte_out = 6;
 params_indexes = [index_gte_in; index_per; index_tkvd; index_tnd; index_tv; index_gte_out];
 
-// Polynomial powers that describe the oil's characteristics dtm_X = f(Ngte)
+// Polynomial powers that describe the oil's characteristics dtX = f(Ngte)
 polynPow(index_per - index_gte_in) = 2;     // dtm_per
 polynPow(index_tkvd - index_gte_in) = 2;    // dtm_tkvd
 polynPow(index_tnd - index_gte_in) = 2;     // dtm_tnd
@@ -74,9 +74,12 @@ path_res = "D:\work\GTA_M56\documentation_preparing\programm_methods_initial_dat
 //=============================================================================================================================
 
 // INITIALIZATION
-count_tmParams = length(params_indexes);
-count_dtmParams = count_tmParams - 1;
-ext_archive = 'txt';
+count_tmParams = length(params_indexes); // quantity of the temperature
+count_dtmParams = count_tmParams - 1; // quantity of the temperatures delta's
+for i = 1 : count_dtmParams
+  dt_name(i) = 'd' + t_name(i + 1); // names of the temperatures delta's
+end
+ext_archive = 'txt'; // archives files extention
 // Arrays for storing steady mode points values
 p2_steadyAll = [];
 dtm_steadyAll = [];
@@ -235,7 +238,7 @@ strTitle = currentCalcIdentif + '\nsectorLength = ' + string(sectorLength) + ..
 
 //  Graphics plot
 for t = 1 : count_dtmParams
-  strImagesTitle = 'd' + t_name(t) + ' = f(Ngte)';
+  strImagesTitle = dt_name(t) + ' = f(Ngte)';
   hWin = scf(t); plot2d(Ngte_all, dtm_steadyAll(:, t), -9); xgrid; 
   title(strImagesTitle + ',  ' + str_datetime, 'fontsize', 4); // steady mode points
   hWin.figure_name = strImagesTitle;
@@ -299,7 +302,7 @@ if exportResToTxtFile == 1
   // Write the parameters names
   mfprintf(f, "\n\t\tNgte  ");
   for i = 1 : count_dtmParams
-    mfprintf(f, "d%s\t\t", t_name(i));
+    mfprintf(f, "%s\t\t", dt_name(i));
   end
   mfprintf(f, "\n");
   

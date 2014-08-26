@@ -1,0 +1,68 @@
+// Common initial data for the reducer oil diagnostics system:
+diag_sys = 2;             // PKSTD system type: 1 - GTE oil's system, 2 - reducer oil's system
+
+// ...
+
+sectorLength = 900;       // Length of splitting sectors
+sectorShift = 300;        // Shift of sector sectorLength in every main cycle iteration
+Ungv_strange = 5;         // Settings ngv strange for defining the steady modes of reducer's work
+Ungv_min = 40;            // Settings ngv min value for defining the steady modes of reducer's work
+
+Nnom = 20020;             // the reducer power on the nominal reducer's work mode
+ngv_nom = 240;            // rotation speed of the reducer outlet rotor on the nominal reducer's work mode
+
+// .......
+
+// Indexes of the oil's parameters
+index_red_in = 1; index_red_out = 2;
+index_tz01a =  3;  index_tz01b =  4;  index_tz02a =  5;  index_tz02b =  6;  index_tz02c =  7;  index_tz02d =  8;
+index_tz03a =  9;  index_tz03b = 10;  index_tz03c = 11;  index_tz03d = 12;  index_tz04a = 13;  index_tz04b = 14;
+index_tz05a = 15;  index_tz05b = 16;  index_tz06a = 17;  index_tz06b = 18;  index_tz07a = 19;  index_tz07b = 20;
+index_tz08a = 21;  index_tz08b = 22;  index_tz09a = 23;  index_tz09b = 24;  index_tz10a = 25;  index_tz10b = 26;
+index_tz11a = 27;  index_tz11b = 28;
+params_indexes = [index_red_in; index_red_out; index_tz01a; index_tz01b; index_tz02a; index_tz02b; 
+                  index_tz02c;  index_tz02d;   index_tz03a; index_tz03b; index_tz03c; index_tz03d; 
+                  index_tz04a;  index_tz04b;   index_tz05a; index_tz05b; index_tz06a; index_tz06b;
+                  index_tz07a;  index_tz07b;   index_tz08a; index_tz08b; index_tz09a; index_tz09b;
+                  index_tz10a;  index_tz10b;   index_tz11a; index_tz11b];
+
+// Polynomial powers that describe the oil's characteristics dtX = f(Ngte)
+polynPow(index_red_out - index_red_in) = 1; // dtm_red_out
+polynPow(index_tz01a - index_red_in) = 1;   // dtz1a
+polynPow(index_tz01b - index_red_in) = 1;   // dtz1b
+polynPow(index_tz02a - index_red_in) = 1;   // dtz2a
+polynPow(index_tz02b - index_red_in) = 1;   // dtz2b
+polynPow(index_tz02c - index_red_in) = 1;   // dtz2c
+polynPow(index_tz02d - index_red_in) = 1;   // dtz2d
+polynPow(index_tz03a - index_red_in) = 1;   // dtz3a
+polynPow(index_tz03b - index_red_in) = 1;   // dtz3b
+polynPow(index_tz03c - index_red_in) = 1;   // dtz3c
+polynPow(index_tz03d - index_red_in) = 1;   // dtz3d
+polynPow(index_tz04a - index_red_in) = 1;   // dtz4a
+polynPow(index_tz04b - index_red_in) = 1;   // dtz4b
+polynPow(index_tz05a - index_red_in) = 1;   // dtz5a
+polynPow(index_tz05b - index_red_in) = 1;   // dtz5b
+polynPow(index_tz06a - index_red_in) = 1;   // dtz6a
+polynPow(index_tz06b - index_red_in) = 1;   // dtz6b
+polynPow(index_tz07a - index_red_in) = 1;   // dtz7a
+polynPow(index_tz07b - index_red_in) = 1;   // dtz7b
+polynPow(index_tz08a - index_red_in) = 1;   // dtz8a
+polynPow(index_tz08b - index_red_in) = 1;   // dtz8b
+polynPow(index_tz09a - index_red_in) = 1;   // dtz9a
+polynPow(index_tz09b - index_red_in) = 1;   // dtz9b
+polynPow(index_tz10a - index_red_in) = 1;   // dtz10a
+polynPow(index_tz10b - index_red_in) = 1;   // dtz10b
+polynPow(index_tz11a - index_red_in) = 1;   // dtz11a
+polynPow(index_tz11b - index_red_in) = 1;   // dtz11b
+
+// ...
+
+// Names of oil's temperatures
+t_name(index_red_in) = 'tm_red_in';
+t_name(index_per) = 'tm_per';
+t_name(index_tkvd) = 'tm_tkvd';
+t_name(index_tnd) = 'tm_tnd';
+t_name(index_tv) = 'tm_tv';
+t_name(index_gte_out) = 'tm_gte_out';
+
+// ...

@@ -27,8 +27,8 @@ sectorShift = 300;        // Shift of sector sectorLength in every main cycle it
 UGt_strange = 10;         // Settings Gt strange for defining the steady modes of GTE's work
 Un2_xx = 5500;            // Settings XX by n2 parameter for defining the steady modes of GTE's work
 
-exportResToTxtFile = 0;   // Export the oil's characteristics points values in a text file: 1 - perform, 0 - don't perform
-exportResToImgFiles = 1;  // Export plotted the oil's characters points values in a graphics files with "png" extension:
+exportResToTxtFile  = 1;  // Export the oil's characteristics points values in a text file: 1 - perform, 0 - don't perform
+exportResToImgFiles = 0;  // Export plotted the oil's characters points values in a graphics files with "png" extension:
                           // 1 - perform, 0 - don't perform
 
 // The initial characteristics Ngte = f(P22) from a set of thermodynamics characteristics
@@ -59,7 +59,6 @@ filesArchive = [// 1 etap PI
 
 //path_archives = '/media/users/Oleg/work_zorya-mashproekt/export20130702/GTA_M56/Archivs/sheep2/sheep2_bort2/bort_2-all';
 path_archives = "D:\work\GTA_M56\Archivs\sheep_2\bort_2-left_all";
-ext_archive = 'txt';
 
 // Names of oil's temperatures
 t_name(index_gte_in) = 'tm_gte_in';
@@ -77,6 +76,7 @@ path_res = "D:\work\GTA_M56\documentation_preparing\programm_methods_initial_dat
 // INITIALIZATION
 count_tmParams = length(params_indexes);
 count_dtmParams = count_tmParams - 1;
+ext_archive = 'txt';
 // Arrays for storing steady mode points values
 p2_steadyAll = [];
 dtm_steadyAll = [];
@@ -206,12 +206,18 @@ printf("[INFO]: Characteristics was defined. Steady mode points quantity: %i\n",
 //=============================================================================================================================
 
 //      SHOW RESULTS
+// CONSTANT INITIAL DATA
 // Relative path's for saving results. 
 // Structure of the results tree directories is constant and therefore this paths variables moved from a Initial data block at here
 path_resGTERltv = "gte"; // relative path for saving the GTE's results characteristics
 path_resReducerRltv = "reducer"; // relative path for saving the reducer's results characteristics
 path_resTxtRltv = "txt"; // relative path for saving the text result
 path_resImageRltv = "images"; // relative path for saving the images
+// Results files exensions
+ext_images = 'png';
+ext_txt = 'rez';
+// Identification current calculation - sheep+board
+currentCalcIdentif = 'sheep' + string(sheep) + '_board' + string(board);
 
 // Define the result relative path in accordance with type of current PKSTD diagnostics system
 if diag_sys == 1
@@ -223,8 +229,8 @@ end
 //  Show results in console
 //printf("RESULTS:\n");
 str_datetime = getDateTimeString();
-strTitle = "sheep = " + string(sheep) + ", board = " + string(board) + "\nsectorLength = " + string(sectorLength) + ..
-           ", sectorShift = " + string(sectorShift) + "\ndate_time = " + str_datetime + "\n";
+strTitle = currentCalcIdentif + '\nsectorLength = ' + string(sectorLength) + ..
+           ', sectorShift = ' + string(sectorShift) + '\ndate_time = ' + str_datetime + '\n';
 //printf("\n%s\n", strTitle);
 
 //  Graphics plot
@@ -250,7 +256,7 @@ if exportResToImgFiles == 1
     printf("[ERROR]: Cannot create the common dir for saving result images:\n\t%s\n", path_resImage);
   end
   // go into the special directory for current calculation
-  path_resImage = path_resImage + '/' + 'sheep' + string(sheep) + '_board' + string(board);
+  path_resImage = path_resImage + '/' + currentCalcIdentif;
   if isdir(path_resImage)
     removedir(path_resImage);
   end
@@ -260,7 +266,6 @@ if exportResToImgFiles == 1
   
   // save image data
   printf("[INFO]: Export the results plotted images of the GTE''s oil''s characteristics to the files:\n");
-  ext_images = 'png';
   figureIDs = winsid();
   for i = 1 : length(figureIDs)
     h = scf(figureIDs(i));
@@ -275,8 +280,8 @@ end
 //  Save results in a text file
 if exportResToTxtFile == 1
   // initial data
-  path_resTxt = path_res + '/' + path_resTxtRltv;
-  file_resTxt = 'sheep' + string(sheep) + '_board' + string(board) + '.rez';
+  path_resTxt = path_res + '/' + path_resDiagSysRltv + '/' + path_resTxtRltv;
+  file_resTxt = currentCalcIdentif + '.' + ext_txt;
   pathFile_resTxt = path_resTxt + '/' + file_resTxt;
   
   if ~isdir(path_resTxt)

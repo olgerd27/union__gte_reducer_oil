@@ -8,7 +8,8 @@ printf("* START application *\n");
 printf("*********************\n");
 
 // LOADING additional files with functions
-path_sourceFiles = "~/Programming/scilab/projects/union__gte_reducer_oil/src";
+//path_sourceFiles = "~/Programming/scilab/projects/union__gte_reducer_oil/src";
+path_sourceFiles = "D:\work\GTA_M56\documentation_preparing\programm_methods_initial_data\apps\union__gte_reducer_oil\src";
 names_sourceFiles = [
                     "add_functions.sci";
                     ];
@@ -17,18 +18,18 @@ for i = 1 : size(names_sourceFiles, 'r')
 end
 
 //  INITIAL DATA
-sys_type = 1;              // PKSTD system type: 1 - GTE oil's system, 2 - reducer oil's system
-sheep = 2;                 // Sheep number
-board = 2;                 // Board: 1 - right, 2 - left
+diag_sys = 1;             // PKSTD system type: 1 - GTE oil's system, 2 - reducer oil's system
+sheep = 2;                // Sheep number
+board = 2;                // Board: 1 - right, 2 - left
 
-sectorLength = 900;        // Length of splitting sectors
-sectorShift = 300;         // Shift of sector sectorLength in every main cycle iteration
-UGt_strange = 10;          // Settings Gt strange for defining the steady modes of GTE's work
-Un2_xx = 5500;             // Settings XX by n2 parameter for defining the steady modes of GTE's work
+sectorLength = 900;       // Length of splitting sectors
+sectorShift = 300;        // Shift of sector sectorLength in every main cycle iteration
+UGt_strange = 10;         // Settings Gt strange for defining the steady modes of GTE's work
+Un2_xx = 5500;            // Settings XX by n2 parameter for defining the steady modes of GTE's work
 
-exportCharactersToTxt = 0; // Export the oil's characteristics points values in a text file: 1 - perform, 0 - don't perform
-exportCharactersToPNG = 0; // Export plotted the oil's characters points values in a graphics files with "png" extension:
-                           // 1 - perform, 0 - don't perform
+exportResToTxtFile = 0;   // Export the oil's characteristics points values in a text file: 1 - perform, 0 - don't perform
+exportResToImgFiles = 1;  // Export plotted the oil's characters points values in a graphics files with "png" extension:
+                          // 1 - perform, 0 - don't perform
 
 // The initial characteristics Ngte = f(P22) from a set of thermodynamics characteristics
 p22_init = [1.795; 2.251; 2.702; 3.380; 4.147; 5.111; 6.322; 7.049; 7.775; 8.408;
@@ -56,7 +57,8 @@ filesArchive = [// 1 etap PI
                 'mo_2013_2_14_10_1_0';  'mo_2013_2_25_13_24_20';  'mo_2013_2_25_18_44_48'; 'mo_2013_2_25_9_58_3';
                 'mo_2013_2_26_9_28_29'; 'mo_2013_3_11_12_48_00'];
 
-path_archives = '/media/users/Oleg/work_zorya-mashproekt/export20130702/GTA_M56/Archivs/sheep2/sheep2_bort2/bort_2-all';
+//path_archives = '/media/users/Oleg/work_zorya-mashproekt/export20130702/GTA_M56/Archivs/sheep2/sheep2_bort2/bort_2-all';
+path_archives = "D:\work\GTA_M56\Archivs\sheep_2\bort_2-left_all";
 ext_archive = 'txt';
 
 // Names of oil's temperatures
@@ -68,9 +70,8 @@ t_name(index_tv) = 'tm_tv';
 t_name(index_gte_out) = 'tm_gte_out';
 
 // Paths for results saving
-path_res = "/media/users/Oleg/work_zorya-mashproekt/export20130702/GTA_M56/documentation_preparing/programm_methods_initial_data/apps/union__gte_reducer_oil/out/txt/gte";
-path_resTxt = "txt"; // path for saving the text result
-path_resImage = "images"; // path for saving the images
+//path_res = "/media/users/Oleg/work_zorya-mashproekt/export20130702/GTA_M56/documentation_preparing/programm_methods_initial_data/apps/union__gte_reducer_oil/out";
+path_res = "D:\work\GTA_M56\documentation_preparing\programm_methods_initial_data\apps\union__gte_reducer_oil\out";
 //=============================================================================================================================
 
 // INITIALIZATION
@@ -205,6 +206,20 @@ printf("[INFO]: Characteristics was defined. Steady mode points quantity: %i\n",
 //=============================================================================================================================
 
 //      SHOW RESULTS
+// Relative path's for saving results. 
+// Structure of the results tree directories is constant and therefore this paths variables moved from a Initial data block at here
+path_resGTERltv = "gte"; // relative path for saving the GTE's results characteristics
+path_resReducerRltv = "reducer"; // relative path for saving the reducer's results characteristics
+path_resTxtRltv = "txt"; // relative path for saving the text result
+path_resImageRltv = "images"; // relative path for saving the images
+
+// Define the result relative path in accordance with type of current PKSTD diagnostics system
+if diag_sys == 1
+  path_resDiagSysRltv = path_resGTERltv;
+else
+  path_resDiagSysRltv = path_resReducerRltv;
+end
+
 //  Show results in console
 //printf("RESULTS:\n");
 str_datetime = getDateTimeString();
@@ -227,14 +242,13 @@ end
 
 //    SAVE RESULTS
 // Export results plots in graphics files
-if exportCharactersToPNG == 1
-  // dirs create/delete operations
+if exportResToImgFiles == 1
+  // Dirs create/delete operations
   // go into the common directory for saving all images
-  path_resImage = path_res + '/' + path_resImage;
+  path_resImage = path_res + '/' + path_resDiagSysRltv + '/' + path_resImageRltv;
   if(~isdir(path_resImage) & ~createdir(path_resImage))
     printf("[ERROR]: Cannot create the common dir for saving result images:\n\t%s\n", path_resImage);
   end
-  
   // go into the special directory for current calculation
   path_resImage = path_resImage + '/' + 'sheep' + string(sheep) + '_board' + string(board);
   if isdir(path_resImage)
@@ -246,10 +260,11 @@ if exportCharactersToPNG == 1
   
   // save image data
   printf("[INFO]: Export the results plotted images of the GTE''s oil''s characteristics to the files:\n");
+  ext_images = 'png';
   figureIDs = winsid();
   for i = 1 : length(figureIDs)
     h = scf(figureIDs(i));
-    exportFileName = h.figure_name + '.png';
+    exportFileName = h.figure_name + '.' + ext_images;
     exportFileName = strsubst(exportFileName, ' ', ''); // spaces deleting
     filePathName = path_resImage + '/' + exportFileName;
     xs2png(h, filePathName);
@@ -258,9 +273,9 @@ if exportCharactersToPNG == 1
 end
 
 //  Save results in a text file
-if exportCharactersToTxt == 1
+if exportResToTxtFile == 1
   // initial data
-  path_resTxt = path_res + '/' + path_resTxt;
+  path_resTxt = path_res + '/' + path_resTxtRltv;
   file_resTxt = 'sheep' + string(sheep) + '_board' + string(board) + '.rez';
   pathFile_resTxt = path_resTxt + '/' + file_resTxt;
   
@@ -299,11 +314,10 @@ if exportCharactersToTxt == 1
 end
 
 //  Show evaluating time in a console
+dT = toc();
+printf("\n[INFO]: Evaluating time: %i min  %4.1f sec\n", int(dT / 60), dT - int(dT / 60) * 60);
+
 printf("**********************\n");
 printf("* FINISH application *\n");
 printf("**********************\n");
-
-dT = toc();
-printf("\n[INFO]: Evaluating time: %i min  %4.1f sec\n", int(dT / 60), dT - int(dT / 60) * 60);
-printf("========================================================================================================\n\n");
 

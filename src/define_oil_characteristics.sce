@@ -153,7 +153,7 @@ path_res = "D:\work\GTA_M56\documentation_preparing\programm_methods_initial_dat
 //path_sourceFiles = "~/Programming/scilab/projects/union__gte_reducer_oil/src";
 path_sourceFiles = "D:\work\GTA_M56\documentation_preparing\programm_methods_initial_data\apps\union__gte_reducer_oil\src";
 names_sourceFiles = [
-                    "in_out.sce";
+                    "in_out.sci";
                     "add_functions.sci";
                     ];
 for i = 1 : size(names_sourceFiles, 'r')

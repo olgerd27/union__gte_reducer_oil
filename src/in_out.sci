@@ -58,13 +58,57 @@ function resParameters = readParametersData(filePath, fileName, fileExt, initPar
 endfunction
 
 // ======= OUT RESULTS =======
-// Data & Time
-function saveResultsToTextFile(path, fileName, strTitle, powers, ..
-                               Ncols, Nrows, .. 
-                               par_regim_data, par_regim_name, par_oil_data, par_oil_names)
-//*******************************
-//  Save results to a text file *
-//*******************************
+function saveResToGraphicFiles(path_imagesOut, calcIdentif, ext_images)
+//*********************************************************************************
+// Save results to a graphics file.                                               *
+// IN:  path_imagesOut - path to the out files                                    *
+//      calcIdentif - information about current calculation (identification info) *
+//      ext_images - extention for the graphics files                             *
+// OUT: ---                                                                       *
+//*********************************************************************************
+  // go into the common directory (dir for saving all images)
+  if(~isdir(path_imagesOut) & ~createdir(path_imagesOut))
+    printf("[ERROR]: Cannot create the common dir for saving result images:\n\t%s\n", path_imagesOut);
+  end
+  // go into the special directory (dir for current calculation)
+  path_imagesOut = path_imagesOut + '/' + calcIdentif;
+  if isdir(path_imagesOut)
+    removedir(path_imagesOut);
+  end
+  if(~createdir(path_imagesOut))
+    printf("[ERROR]: Cannot create the dir for saving result images: %s\n", path_imagesOut);
+  end
+  
+  // save image data
+  printf("[INFO]: Export the results plotted images of the GTE''s oil''s characteristics to the files:\n");
+  figureIDs = winsid();
+  for i = 1 : length(figureIDs)
+    h = scf(figureIDs(i));
+    exportFileName = h.figure_name + '.' + ext_images;
+    exportFileName = strsubst(exportFileName, ' ', ''); // spaces deleting
+    filePathName = path_imagesOut + '/' + exportFileName;
+    xs2png(h, filePathName);
+    printf("\t%s\n", filePathName);
+  end
+endfunction
+
+function saveResToTextFile(path, fileName, strTitle, powers, ..
+                           Ncols, Nrows, .. 
+                           par_regim_data, par_regim_name, par_oil_data, par_oil_names)
+//***************************************************************************************************
+// Save results to a text file.                                                                     *
+// IN:  path - path to the out file                                                                 *
+//      fileName - name of the out file                                                             *
+//      strTitle - title string, that writes in the out file with information about current results *
+//      powers - array of the polynomial powers                                                     *
+//      Ncols - quantity of the columns of the oil data array (par_oil_data array)                  *
+//      Nrows - quantity of the rows of the oil data array (par_oil_data array)                     *
+//      par_regim_data - data of the regime parameter of the result characteristics (X-axes)        *
+//      par_regim_name - name of the regime parameter of the result characteristics (X-axes)        *
+//      par_oil_data - data of the oil parameters (Y-axes)                                          *
+//      par_oil_names - names of the oil parameters (Y-axes)                                        *
+// OUT: ---                                                                                         *
+//***************************************************************************************************
   filePathName = path + '/' + fileName;
   
   if ~isdir(path)

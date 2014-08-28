@@ -26,8 +26,8 @@ else
 end
 
 
-exportResToTxtFile  = 1;  // Export the oil's characteristics points values in a text file: 1 - perform, 0 - don't perform
-exportResToImgFiles = 0;  // Export plotted the oil's characters points values in a graphics files with "png" extension:
+exportResToTxtFile  = 0;  // Export the oil's characteristics points values in a text file: 1 - perform, 0 - don't perform
+exportResToImgFiles = 1;  // Export plotted the oil's characters points values in a graphics files with "png" extension:
                           // 1 - perform, 0 - don't perform
 
 // The initial characteristics Ngte = f(P22) from a set of thermodynamics characteristics
@@ -321,8 +321,7 @@ else
   path_resDiagSysRltv = path_resReducerRltv;
 end
 
-//  Show results in console
-//printf("RESULTS:\n");
+//  Show results processing
 str_datetime = getDateTimeString();
 strTitle = currentCalcIdentif + '\nsectorLength = ' + string(sectorLength) + ..
            ', sectorShift = ' + string(sectorShift) + '\ndate_time = ' + str_datetime + '\n';
@@ -344,40 +343,16 @@ end
 //    SAVE RESULTS
 // Export results plots in graphics files
 if exportResToImgFiles == 1
-  // Dirs create/delete operations
-  // go into the common directory for saving all images
-  path_resImage = path_res + '/' + path_resDiagSysRltv + '/' + path_resImageRltv;
-  if(~isdir(path_resImage) & ~createdir(path_resImage))
-    printf("[ERROR]: Cannot create the common dir for saving result images:\n\t%s\n", path_resImage);
-  end
-  // go into the special directory for current calculation
-  path_resImage = path_resImage + '/' + currentCalcIdentif;
-  if isdir(path_resImage)
-    removedir(path_resImage);
-  end
-  if(~createdir(path_resImage))
-    printf("[ERROR]: Cannot create the dir for saving result images: %s\n", path_resImage);
-  end
-  
-  // save image data
-  printf("[INFO]: Export the results plotted images of the GTE''s oil''s characteristics to the files:\n");
-  figureIDs = winsid();
-  for i = 1 : length(figureIDs)
-    h = scf(figureIDs(i));
-    exportFileName = h.figure_name + '.' + ext_images;
-    exportFileName = strsubst(exportFileName, ' ', ''); // spaces deleting
-    filePathName = path_resImage + '/' + exportFileName;
-    xs2png(h, filePathName);
-    printf("\t%s\n", filePathName);
-  end
+  saveResToGraphicFiles(path_res + '/' + path_resDiagSysRltv + '/' + path_resImageRltv, ..
+                        currentCalcIdentif, ext_images);
 end
 
 //  Save results in a text file
 if exportResToTxtFile == 1
-  saveResultsToTextFile(path_res + '/' + path_resDiagSysRltv + '/' + path_resTxtRltv,  ..
-                        currentCalcIdentif + '.' + ext_txt, strTitle, polynPow, ..
-                        count_dtmParams, count_initCharsPnts, ..
-                        Ngte_init, 'Ngte', dtm_apr, dt_name);
+  saveResToTextFile(path_res + '/' + path_resDiagSysRltv + '/' + path_resTxtRltv, ..
+                    currentCalcIdentif + '.' + ext_txt, strTitle, polynPow, ..
+                    count_dtmParams, count_initCharsPnts, ..
+                    Ngte_init, 'Ngte', dtm_apr, dt_name);
 end
 
 //  Show evaluating time in a console

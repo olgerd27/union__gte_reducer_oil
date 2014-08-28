@@ -7,28 +7,27 @@ printf("*********************\n");
 printf("* START application *\n");
 printf("*********************\n");
 
-// LOADING additional files with functions
-//path_sourceFiles = "~/Programming/scilab/projects/union__gte_reducer_oil/src";
-path_sourceFiles = "D:\work\GTA_M56\documentation_preparing\programm_methods_initial_data\apps\union__gte_reducer_oil\src";
-names_sourceFiles = [
-                    "add_functions.sci";
-                    ];
-for i = 1 : size(names_sourceFiles, 'r')
-  exec(path_sourceFiles + '/' + names_sourceFiles(i)); // loading functionality from the files
-end
-
 //  INITIAL DATA
-diag_sys = 1;             // PKSTD system type: 1 - GTE oil's system, 2 - reducer oil's system
+diag_sys = 1;             // PKSTD diagnostics system: 1 - GTE oil's system, 2 - reducer oil's system
 sheep = 2;                // Sheep number
 board = 2;                // Board: 1 - right, 2 - left
 
 sectorLength = 900;       // Length of splitting sectors
-sectorShift = 300;        // Shift of sector sectorLength in every main cycle iteration
-UGt_strange = 10;         // Settings Gt strange for defining the steady modes of GTE's work
-Un2_xx = 5500;            // Settings XX by n2 parameter for defining the steady modes of GTE's work
+sectorShift = 300;        // Shift of sector with length sectorLength in every main cycle iteration
+if diag_sys == 1
+  UGt_strange = 10;       // Settings Gt strange for defining the steady modes of GTE's work
+  Un2_xx = 5500;          // Settings XX by n2 parameter for defining the steady modes of GTE's work
+else
+  Ungv_strange = 5;       // Settings ngv strange for defining the steady modes of reducer's work
+  Ungv_min = 40;          // Settings ngv min value for defining the steady modes of reducer's work
+
+  Nnom = 20020;           // the reducer power on the nominal reducer's work mode
+  ngv_nom = 240;          // rotation speed of the reducer outlet rotor on the nominal reducer's work mode
+end
+
 
 exportResToTxtFile  = 1;  // Export the oil's characteristics points values in a text file: 1 - perform, 0 - don't perform
-exportResToImgFiles = 1;  // Export plotted the oil's characters points values in a graphics files with "png" extension:
+exportResToImgFiles = 0;  // Export plotted the oil's characters points values in a graphics files with "png" extension:
                           // 1 - perform, 0 - don't perform
 
 // The initial characteristics Ngte = f(P22) from a set of thermodynamics characteristics
@@ -38,16 +37,62 @@ Ngte_init = [110.4; 273.4; 434.4; 676.5; 950.2; 1294.5; 2052.5; 2643.4; 3234.2; 
              4353.8; 5098.5; 5958.6; 7823; 9869.7; 11981; 14013.4; 16015.3; 18017.2; 20019.1];
 
 // Indexes of the oil's parameters
-index_gte_in = 1; 
-index_per = 2;  index_tkvd = 3;  index_tnd = 4;  index_tv = 5;  index_gte_out = 6;
-params_indexes = [index_gte_in; index_per; index_tkvd; index_tnd; index_tv; index_gte_out];
+if diag_sys == 1
+  // TODO: Maybe delete all indexes and params_indexes here and in "else" section too... it is not used anywhere but INITIAL DATA section
+  index_gte_in = 1;
+  index_per = 2;  index_tkvd = 3;  index_tnd = 4;  index_tv = 5;  index_gte_out = 6;
+  params_indexes = [index_gte_in; index_per; index_tkvd; index_tnd; index_tv; index_gte_out];
+else
+  index_red_in = 1; index_red_out = 2;
+  index_tz01a =  3;  index_tz01b =  4;  index_tz02a =  5;  index_tz02b =  6;  index_tz02c =  7;  index_tz02d =  8;
+  index_tz03a =  9;  index_tz03b = 10;  index_tz03c = 11;  index_tz03d = 12;  index_tz04a = 13;  index_tz04b = 14;
+  index_tz05a = 15;  index_tz05b = 16;  index_tz06a = 17;  index_tz06b = 18;  index_tz07a = 19;  index_tz07b = 20;
+  index_tz08a = 21;  index_tz08b = 22;  index_tz09a = 23;  index_tz09b = 24;  index_tz10a = 25;  index_tz10b = 26;
+  index_tz11a = 27;  index_tz11b = 28;
+  params_indexes = [index_red_in; index_red_out; index_tz01a; index_tz01b; index_tz02a; index_tz02b; 
+                    index_tz02c;  index_tz02d;   index_tz03a; index_tz03b; index_tz03c; index_tz03d; 
+                    index_tz04a;  index_tz04b;   index_tz05a; index_tz05b; index_tz06a; index_tz06b;
+                    index_tz07a;  index_tz07b;   index_tz08a; index_tz08b; index_tz09a; index_tz09b;
+                    index_tz10a;  index_tz10b;   index_tz11a; index_tz11b];
+end
 
 // Polynomial powers that describe the oil's characteristics dtX = f(Ngte)
-polynPow(index_per - index_gte_in) = 2;     // dtm_per
-polynPow(index_tkvd - index_gte_in) = 2;    // dtm_tkvd
-polynPow(index_tnd - index_gte_in) = 2;     // dtm_tnd
-polynPow(index_tv - index_gte_in) = 2;      // dtm_tv
-polynPow(index_gte_out - index_gte_in) = 2; // dtm_gte_out
+// TODO: maybe use simply digit indexes instead of variables. This make the code more simply
+if diag_sys == 1
+  polynPow(index_per - index_gte_in) = 2;     // dtm_per
+  polynPow(index_tkvd - index_gte_in) = 2;    // dtm_tkvd
+  polynPow(index_tnd - index_gte_in) = 2;     // dtm_tnd
+  polynPow(index_tv - index_gte_in) = 2;      // dtm_tv
+  polynPow(index_gte_out - index_gte_in) = 2; // dtm_gte_out
+else
+  polynPow(index_red_out - index_red_in) = 1; // dtm_red_out
+  polynPow(index_tz01a - index_red_in) = 1;   // dtz1a
+  polynPow(index_tz01b - index_red_in) = 1;   // dtz1b
+  polynPow(index_tz02a - index_red_in) = 1;   // dtz2a
+  polynPow(index_tz02b - index_red_in) = 1;   // dtz2b
+  polynPow(index_tz02c - index_red_in) = 1;   // dtz2c
+  polynPow(index_tz02d - index_red_in) = 1;   // dtz2d
+  polynPow(index_tz03a - index_red_in) = 1;   // dtz3a
+  polynPow(index_tz03b - index_red_in) = 1;   // dtz3b
+  polynPow(index_tz03c - index_red_in) = 1;   // dtz3c
+  polynPow(index_tz03d - index_red_in) = 1;   // dtz3d
+  polynPow(index_tz04a - index_red_in) = 1;   // dtz4a
+  polynPow(index_tz04b - index_red_in) = 1;   // dtz4b
+  polynPow(index_tz05a - index_red_in) = 1;   // dtz5a
+  polynPow(index_tz05b - index_red_in) = 1;   // dtz5b
+  polynPow(index_tz06a - index_red_in) = 1;   // dtz6a
+  polynPow(index_tz06b - index_red_in) = 1;   // dtz6b
+  polynPow(index_tz07a - index_red_in) = 1;   // dtz7a
+  polynPow(index_tz07b - index_red_in) = 1;   // dtz7b
+  polynPow(index_tz08a - index_red_in) = 1;   // dtz8a
+  polynPow(index_tz08b - index_red_in) = 1;   // dtz8b
+  polynPow(index_tz09a - index_red_in) = 1;   // dtz9a
+  polynPow(index_tz09b - index_red_in) = 1;   // dtz9b
+  polynPow(index_tz10a - index_red_in) = 1;   // dtz10a
+  polynPow(index_tz10b - index_red_in) = 1;   // dtz10b
+  polynPow(index_tz11a - index_red_in) = 1;   // dtz11a
+  polynPow(index_tz11b - index_red_in) = 1;   // dtz11b
+end
 
 // Setting archives path, names and extension
 filesArchive = [// 1 etap PI
@@ -61,17 +106,59 @@ filesArchive = [// 1 etap PI
 path_archives = "D:\work\GTA_M56\Archivs\sheep_2\bort_2-left_all";
 
 // Names of oil's temperatures
-t_name(index_gte_in) = 'tm_gte_in';
-t_name(index_per) = 'tm_per';
-t_name(index_tkvd) = 'tm_tkvd';
-t_name(index_tnd) = 'tm_tnd';
-t_name(index_tv) = 'tm_tv';
-t_name(index_gte_out) = 'tm_gte_out';
+if diag_sys == 1
+  t_name(index_gte_in) = 'tm_gte_in';
+  t_name(index_per) = 'tm_per';
+  t_name(index_tkvd) = 'tm_tkvd';
+  t_name(index_tnd) = 'tm_tnd';
+  t_name(index_tv) = 'tm_tv';
+  t_name(index_gte_out) = 'tm_gte_out';
+else
+  t_name(index_red_in) = 'tm_red_in';
+  t_name(index_red_out) = 'tm_red_out';
+  t_name(index_tz01a) = 'tz01a';
+  t_name(index_tz01b) = 'tz01b';
+  t_name(index_tz02a) = 'tz02a';
+  t_name(index_tz02b) = 'tz02b';
+  t_name(index_tz02c) = 'tz02c';
+  t_name(index_tz02d) = 'tz02d';
+  t_name(index_tz03a) = 'tz03a';
+  t_name(index_tz03b) = 'tz03b';
+  t_name(index_tz03c) = 'tz03c';
+  t_name(index_tz03d) = 'tz03d';
+  t_name(index_tz04a) = 'tz04a';
+  t_name(index_tz04b) = 'tz04b';
+  t_name(index_tz05a) = 'tz05a';
+  t_name(index_tz05b) = 'tz05b';
+  t_name(index_tz06a) = 'tz06a';
+  t_name(index_tz06b) = 'tz06b';
+  t_name(index_tz07a) = 'tz07a';
+  t_name(index_tz07b) = 'tz07b';
+  t_name(index_tz08a) = 'tz08a';
+  t_name(index_tz08b) = 'tz08b';
+  t_name(index_tz09a) = 'tz09a';
+  t_name(index_tz09b) = 'tz09b';
+  t_name(index_tz10a) = 'tz10a';
+  t_name(index_tz10b) = 'tz10b';
+  t_name(index_tz11a) = 'tz11a';
+  t_name(index_tz11b) = 'tz11b';
+end
 
 // Paths for results saving
 //path_res = "/media/users/Oleg/work_zorya-mashproekt/export20130702/GTA_M56/documentation_preparing/programm_methods_initial_data/apps/union__gte_reducer_oil/out";
 path_res = "D:\work\GTA_M56\documentation_preparing\programm_methods_initial_data\apps\union__gte_reducer_oil\out";
 //=============================================================================================================================
+
+// LOADING additional files with functions
+//path_sourceFiles = "~/Programming/scilab/projects/union__gte_reducer_oil/src";
+path_sourceFiles = "D:\work\GTA_M56\documentation_preparing\programm_methods_initial_data\apps\union__gte_reducer_oil\src";
+names_sourceFiles = [
+                    "in_out.sce";
+                    "add_functions.sci";
+                    ];
+for i = 1 : size(names_sourceFiles, 'r')
+  exec(path_sourceFiles + '/' + names_sourceFiles(i)); // loading functionality from the files
+end
 
 // INITIALIZATION
 count_tmParams = length(params_indexes); // quantity of the temperature
@@ -81,42 +168,50 @@ for i = 1 : count_dtmParams
 end
 ext_archive = 'txt'; // archives files extention
 // Arrays for storing steady mode points values
+// TODO: is this need??
 p2_steadyAll = [];
 dtm_steadyAll = [];
+// Struct for storing parameters data, readed from archive file
+if diag_sys == 1
+  index_t0 = 1;  index_Gt = 2;  index_p2 = 3;  index_n2 = 4;  index_tm = 5; // parameters indexes
+  params(index_t0) = struct('name', 't0', 'archIndexStart', 16, 'archIndexEnd', 18, 'data', []);
+  params(index_Gt) = struct('name', 'Gt', 'archIndexStart', 120, 'archIndexEnd', 120, 'data', []);
+  params(index_p2) = struct('name', 'p2', 'archIndexStart', 38, 'archIndexEnd', 38, 'data', []);
+  params(index_n2) = struct('name', 'n2', 'archIndexStart', 10, 'archIndexEnd', 10, 'data', []);
+  params(index_tm) = struct('name', 'tm', 'archIndexStart', 47, 'archIndexEnd', 52, 'data', []);
+else
+  // TODO: for reducer
+end
 
 // MAIN CYCLE
 for fileIndex = 1 : size(filesArchive, 'r')
   // Deleting results that was obtained in the previous main cycle iteration
-  clear archiveData; clear t0; clear alfa; clear Gt; clear n2; clear tm;
+  clear t0; clear alpha; clear Gt; clear n2; clear tm;
   clear Ixx_currP; clear Gt_strange;
   clear p2_avrg; clear n2_avrg; clear Gt_avrg; clear tm_avrg;
   clear p2_steady; clear n2_steady; clear tm_steady; clear arrayNumber;
   clear dtm_steady;
-  
+    
   //  READING an archive file
-  archiveData = fscanfMat(path_archives + '/' + filesArchive(fileIndex) + '.' + ext_archive);
-  
-  // Reading data from a bad archives
-  if filesArchive(fileIndex) == 'mo_2012_11_24_8_55_21'
-    // In this archive was breaked one sensor. There are need to use only part of archive, when values of this sensors was valid
-    archiveData = archiveData(1 : 8750, :);
-  end
+  params = readParametersData(path_archives + '/', filesArchive(fileIndex), '.' + ext_archive, params);
 
   // Getting the parameters arrays with reduction to a normal atmospheric condition
-  t0 = mean(archiveData(:, 16:18), 'c');
-  alfa = sqrt(288 ./ (t0 + 273));
-  Gt = archiveData(:, 120);
-  p2 = archiveData(:, 38) * 10.2;  // for getting a regime parameters values (Ngte), there are needing to read P22 values. Readed values P22 converting from MPa to kg/cm2
-  n2 = archiveData(:, 10) .* alfa;
-  for i = 1 : count_tmParams
-    tm(:, i) = archiveData(:, 46 + i);
+  if diag_sys == 1
+    t0 = mean(params(index_t0).data, 'c');
+    alpha = sqrt(288 ./ (t0 + 273)); // alpha coefficient for reductions parameters to normal atmospheric conditions
+    Gt = params(index_Gt).data;
+    p2 = params(index_p2).data * 10.2;  //for getting a regime parameters values there are needing to read P22 values. There are сonvertion from MPa to kg/cm2
+    n2 = params(index_n2).data .* alpha; // reduction to normal conditions
+    tm = params(index_tm).data;
+  else
+    
   end
 
   IN = length(Gt);
   Ixx = [1 : IN];
   
   //  Splitting of parameters arrays to sectors with defining the average values and strange
-  kk = ceil(sectorLength / sectorShift); // the coefficient for correct definition the iterations quantity and correct moving buffer with length "sectorShift" secs by all archive
+  kk = ceil(sectorLength / sectorShift); // the coefficient for correct definition the iterations quantity and correct shifting buffer with length "sectorShift" secs by all archive
   for j = kk : int(IN / sectorShift)
     from = sectorShift * (j - 1) + 1;
     to = sectorShift * j;
@@ -126,11 +221,8 @@ for fileIndex = 1 : size(filesArchive, 'r')
     Gt_curr2 = Gt(from : to);
     p2_curr = p2(from : to);
     n2_curr = n2(from : to);
-    for t = 1 : count_tmParams
-      tm_curr(:, t) = tm(from : to, t);
-    end
+    tm_curr = tm(from : to, :);
     Ixx_curr = Ixx(from : to);
-    
     Ixx_currP(j) = j * sectorShift;
 
     Gt_strange(j) = strange(Gt_curr1);
@@ -147,7 +239,7 @@ for fileIndex = 1 : size(filesArchive, 'r')
   // Define the steady modes of GTE's work on sectors with length "sectorLength" seconds
   steadyIndex = 0;
   for i = 1 : int(IN / sectorShift)
-    if (Gt_strange(i) <= 10) & (n2_avrg(i) > Un2_xx) & (Gt_avrg(i) > 0)
+    if (Gt_strange(i) <= UGt_strange) & (n2_avrg(i) > Un2_xx) & (Gt_avrg(i) > 0)
       steadyIndex = steadyIndex + 1;
       p2_steady(steadyIndex) = p2_avrg(i);
       n2_steady(steadyIndex) = n2_avrg(i);
@@ -282,43 +374,10 @@ end
 
 //  Save results in a text file
 if exportResToTxtFile == 1
-  // initial data
-  path_resTxt = path_res + '/' + path_resDiagSysRltv + '/' + path_resTxtRltv;
-  file_resTxt = currentCalcIdentif + '.' + ext_txt;
-  pathFile_resTxt = path_resTxt + '/' + file_resTxt;
-  
-  if ~isdir(path_resTxt)
-    createdir(path_resTxt);
-  else
-    mdelete(pathFile_resTxt); // delete file with the same name as a current file
-  end
-  
-  f = mopen(pathFile_resTxt, 'w');
-  mfprintf(f, strTitle + "powers = ");
-  for i = 1 : count_dtmParams
-    mfprintf(f, "%i  ", polynPow(i));
-  end
-  
-  // Write the parameters names
-  mfprintf(f, "\n\t\tNgte  ");
-  for i = 1 : count_dtmParams
-    mfprintf(f, "%s\t\t", dt_name(i));
-  end
-  mfprintf(f, "\n");
-  
-  // Write values
-  for i = 1 : count_initCharsPnts
-    mfprintf(f, "%8.2f\t\t", Ngte_init(i));
-    for j = 1 : count_dtmParams
-      mfprintf(f, "%5.2f\t\t\t", dtm_apr(i, j));
-    end
-    mfprintf(f, "\n");
-  end
-  mclose(f);
-  
-  // show info message
-  printf("[INFO]: The results points values of the GTE''s oil''s characteristics was exported to the text file:\n");
-  printf("\t%s\n", pathFile_resTxt);
+  saveResultsToTextFile(path_res + '/' + path_resDiagSysRltv + '/' + path_resTxtRltv,  ..
+                        currentCalcIdentif + '.' + ext_txt, strTitle, polynPow, ..
+                        count_dtmParams, count_initCharsPnts, ..
+                        Ngte_init, 'Ngte', dtm_apr, dt_name);
 end
 
 //  Show evaluating time in a console

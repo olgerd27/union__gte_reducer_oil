@@ -112,7 +112,7 @@ function date_time_str = getDateTimeString()
 //********************************************************************
 // Preparing the string in the format: "year.month.day_hour:min:sec" *
 //********************************************************************
-  date_time_int = int(datevec(now()));
+  date_time_int = round(datevec(now()));
   date_time_str = sprintf("%i.%i.%i_%i:%i:%i", date_time_int(1), date_time_int(2),..
                                                date_time_int(3), date_time_int(4),..
                                                date_time_int(5), date_time_int(6));

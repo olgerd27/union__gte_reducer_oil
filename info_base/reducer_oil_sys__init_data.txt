@@ -59,10 +59,33 @@ polynPow(index_tz11b - index_red_in) = 1;   // dtz11b
 
 // Names of oil's temperatures
 t_name(index_red_in) = 'tm_red_in';
-t_name(index_per) = 'tm_per';
-t_name(index_tkvd) = 'tm_tkvd';
-t_name(index_tnd) = 'tm_tnd';
-t_name(index_tv) = 'tm_tv';
-t_name(index_gte_out) = 'tm_gte_out';
+t_name(index_red_out) = 'tm_red_out';
+t_name(index_tz01a) = 'tz01a';
+t_name(index_tz01b) = 'tz01b';
+t_name(index_tz02a) = 'tz02a';
+t_name(index_tz02b) = 'tz02b';
+t_name(index_tz02c) = 'tz02c';
+t_name(index_tz02d) = 'tz02d';
+t_name(index_tz03a) = 'tz03a';
+t_name(index_tz03b) = 'tz03b';
+t_name(index_tz03c) = 'tz03c';
+t_name(index_tz03d) = 'tz03d';
+t_name(index_tz04a) = 'tz04a';
+t_name(index_tz04b) = 'tz04b';
+t_name(index_tz05a) = 'tz05a';
+t_name(index_tz05b) = 'tz05b';
+t_name(index_tz06a) = 'tz06a';
+t_name(index_tz06b) = 'tz06b';
+t_name(index_tz07a) = 'tz07a';
+t_name(index_tz07b) = 'tz07b';
+t_name(index_tz08a) = 'tz08a';
+t_name(index_tz08b) = 'tz08b';
+t_name(index_tz09a) = 'tz09a';
+t_name(index_tz09b) = 'tz09b';
+t_name(index_tz10a) = 'tz10a';
+t_name(index_tz10b) = 'tz10b';
+t_name(index_tz11a) = 'tz11a';
+t_name(index_tz11b) = 'tz11b';
 
 // ...
+

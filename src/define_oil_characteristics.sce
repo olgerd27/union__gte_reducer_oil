@@ -219,14 +219,25 @@ for fileIndex = 1 : size(filesArchive, 'r') // TODO: correct cycle quantity afte
     arrayNumber = j * sectorShift;
 
     // split arrays and calc strange or average values of parameters
-    Gt_strange = strange(Gt(to - sectorLength + 1 : to)); // there are splitting and strange value calculation
-    n2_avrg = median(n2(from : to));
-    Gt_avrg = median(Gt(from : to));
+    isSteadyMode = %F;
+    if diag_sys == 1
+      Gt_strange = strange(Gt(to - sectorLength + 1 : to)); // there are splitting and strange value calculation
+      n2_avrg = median(n2(from : to));
+      Gt_avrg = median(Gt(from : to));
+      isSteadyMode = (Gt_strange <= UGt_strange) & (n2_avrg > Un2_xx) & (Gt_avrg > 0);
+    else
+      reg_strange = strange(reg(to - sectorLength + 1 : to));
+      reg_avrg = median(reg(from : to));
+      isSteadyMode = (reg_strange <= Ungv_strange) & (reg_avrg > Ungv_min);
+    end
 
     // Define the steady modes of GTE's work on sectors with length "sectorLength" seconds
-    if (Gt_strange <= UGt_strange) & (n2_avrg > Un2_xx) & (Gt_avrg > 0)
+    if isSteadyMode
       steadyIndex = steadyIndex + 1;
       reg_steady(steadyIndex) = median(reg(from : to));
+      if diag_sys == 2
+        reg_steady(steadyIndex) = reg_avrg;
+      end
       for t = 1 : count_tmParams
         tm_steady(steadyIndex, t) = median(tm(from : to, t));
       end
@@ -274,9 +285,6 @@ count_initCharsPnts = length(Ngte_init); // quantity of points in initial charac
 //  Define the power (N) values
 if diag_sys == 1
   N_all = p2ToPower(reg_all, count_steadyModes, p2_init, Ngte_init);
-  //for i = 1 : count_steadyModes
-  //  N_all(i) = interExtraPolation(p2_init, Ngte_init, reg_all(i));
-  //end
 else
   N_all = ngvToPower(ngv_steadyAll, Nnom, ngv_nom);
 end

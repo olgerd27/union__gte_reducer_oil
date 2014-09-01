@@ -26,4 +26,3 @@ function N = ngvToPower(ngv, N_nom, ngv_nom)
   a = (N_nom / ngv_nom ^ power_N_ngv);
   N = a * ngv ^ power_N_ngv;
 endfunction
-  

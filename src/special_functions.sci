@@ -26,3 +26,20 @@ function N = ngvToPower(ngv, N_nom, ngv_nom)
   a = (N_nom / ngv_nom ^ power_N_ngv);
   N = a * ngv ^ power_N_ngv;
 endfunction
+
+function [invalidCols, invalidRows] = calcInvalidValuePos(indexes, count_rows)
+//*****************************************************************************************
+// Calculate the positions (rows, cols) of the parameters arrays rows with invalid data   *
+// IN:  indexes - array of indexes with invalid values of parameters                      *
+//      count_rows - the rows quantity in parameters arrays                               *
+// OUT: invalidRows - the array of the parameters arrays rows numbers with invalid values *
+//      invalidCols - the array of the parameters arrays cols numbers with invalid values *
+//*****************************************************************************************
+  invalidCols = ceil(indexes / count_rows);
+  invalidRows = indexes - int(indexes / count_rows) * count_rows;
+  lastValuesInCols = find(invalidRows == 0);
+  if length(lastValuesInCols)
+    invalidRows(lastValuesInCols) = count_rows;
+  end
+endfunction
+

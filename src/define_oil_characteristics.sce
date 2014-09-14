@@ -3,13 +3,13 @@
 tic;
 xdel(winsid());
 clear;
-stacksize('max');
+stacksize(5e7);
 printf("*********************\n");
 printf("* START application *\n");
 printf("*********************\n");
 
 //  INITIAL DATA
-diag_sys = 1;             // PKSTD diagnostics system: 1 - GTE oil's system, 2 - reducer oil's system
+diag_sys = 2;             // PKSTD diagnostics system: 1 - GTE oil's system, 2 - reducer oil's system
 sheep = 2;                // Sheep number
 board = 2;                // Board: 1 - right, 2 - left
 
@@ -26,9 +26,12 @@ else
   ngv_nom = 240;          // rotation speed of the reducer outlet shaft on the nominal reducer's work mode
 end
 
+Udtm_valid_min = 0;       // Settings dtm min value for defining the invalid points
+Udtm_valid_max = 80;      // Settings dtm max value for defining the invalid points
 
-exportResToTxtFile  = 1;  // Export the oil's characteristics points values in a text file: 1 - perform, 0 - don't perform
-exportResToImgFiles = 1;  // Export plotted the oil's characters points values in a graphics files with "png" extension:
+
+exportResToTxtFile  = 0  // Export the oil's characteristics points values in a text file: 1 - perform, 0 - don't perform
+exportResToImgFiles = 0;  // Export plotted the oil's characters points values in a graphics files with "png" extension:
                           // 1 - perform, 0 - don't perform
 
 // The initial characteristics Ngte = f(p2) from a set of thermodynamics characteristics
@@ -38,61 +41,61 @@ Ngte_init = [110.4; 273.4; 434.4; 676.5; 950.2; 1294.5; 2052.5; 2643.4; 3234.2; 
              4353.8; 5098.5; 5958.6; 7823; 9869.7; 11981; 14013.4; 16015.3; 18017.2; 20019.1];
 
 // Indexes of the oil's parameters
+index_in = 0; index_out = 0; // initial values
 if diag_sys == 1
   // TODO: Maybe delete all indexes and params_indexes here and in "else" section too... it is not used anywhere but INITIAL DATA section
-  index_gte_in = 1;
-  index_per = 2;  index_tkvd = 3;  index_tnd = 4;  index_tv = 5;  index_gte_out = 6;
-  params_indexes = [index_gte_in; index_per; index_tkvd; index_tnd; index_tv; index_gte_out];
+  index_in = 1;  index_per = 2;  index_tkvd = 3;  index_tnd = 4;  index_tv = 5;  index_out = 6;
+  params_indexes = [index_in; index_per; index_tkvd; index_tnd; index_tv; index_out];
 else
-  index_red_in = 1; index_red_out = 2;
+  index_in = 1;      index_out = 2;
   index_tz01a =  3;  index_tz01b =  4;  index_tz02a =  5;  index_tz02b =  6;  index_tz02c =  7;  index_tz02d =  8;
   index_tz03a =  9;  index_tz03b = 10;  index_tz03c = 11;  index_tz03d = 12;  index_tz04a = 13;  index_tz04b = 14;
   index_tz05a = 15;  index_tz05b = 16;  index_tz06a = 17;  index_tz06b = 18;  index_tz07a = 19;  index_tz07b = 20;
   index_tz08a = 21;  index_tz08b = 22;  index_tz09a = 23;  index_tz09b = 24;  index_tz10a = 25;  index_tz10b = 26;
   index_tz11a = 27;  index_tz11b = 28;
-  params_indexes = [index_red_in; index_red_out; index_tz01a; index_tz01b; index_tz02a; index_tz02b; 
-                    index_tz02c;  index_tz02d;   index_tz03a; index_tz03b; index_tz03c; index_tz03d; 
-                    index_tz04a;  index_tz04b;   index_tz05a; index_tz05b; index_tz06a; index_tz06b;
-                    index_tz07a;  index_tz07b;   index_tz08a; index_tz08b; index_tz09a; index_tz09b;
-                    index_tz10a;  index_tz10b;   index_tz11a; index_tz11b];
+  params_indexes = [index_in; index_out; 
+    index_tz01a; index_tz01b; index_tz02a; index_tz02b; index_tz02c; index_tz02d; index_tz03a; index_tz03b; 
+    index_tz03c; index_tz03d; index_tz04a; index_tz04b; index_tz05a; index_tz05b; index_tz06a; index_tz06b;
+    index_tz07a; index_tz07b; index_tz08a; index_tz08b; index_tz09a; index_tz09b; index_tz10a; index_tz10b;
+    index_tz11a; index_tz11b];
 end
 
 // Polynomial powers that describe the oil's characteristics dtX = f(Ngte)
 // TODO: maybe use simply digit indexes instead of variables. This make the code more simply
 if diag_sys == 1
-  polynPow(index_per - index_gte_in) = 2;     // dtm_per
-  polynPow(index_tkvd - index_gte_in) = 2;    // dtm_tkvd
-  polynPow(index_tnd - index_gte_in) = 2;     // dtm_tnd
-  polynPow(index_tv - index_gte_in) = 2;      // dtm_tv
-  polynPow(index_gte_out - index_gte_in) = 2; // dtm_gte_out
+  polynPow(index_per - index_in) = 2;     // dtm_per
+  polynPow(index_tkvd - index_in) = 2;    // dtm_tkvd
+  polynPow(index_tnd - index_in) = 2;     // dtm_tnd
+  polynPow(index_tv - index_in) = 2;      // dtm_tv
+  polynPow(index_out - index_in) = 2; // dtm_gte_out
 else
-  polynPow(index_red_out - index_red_in) = 1; // dtm_red_out
-  polynPow(index_tz01a - index_red_in) = 1;   // dtz1a
-  polynPow(index_tz01b - index_red_in) = 1;   // dtz1b
-  polynPow(index_tz02a - index_red_in) = 1;   // dtz2a
-  polynPow(index_tz02b - index_red_in) = 1;   // dtz2b
-  polynPow(index_tz02c - index_red_in) = 1;   // dtz2c
-  polynPow(index_tz02d - index_red_in) = 1;   // dtz2d
-  polynPow(index_tz03a - index_red_in) = 1;   // dtz3a
-  polynPow(index_tz03b - index_red_in) = 1;   // dtz3b
-  polynPow(index_tz03c - index_red_in) = 1;   // dtz3c
-  polynPow(index_tz03d - index_red_in) = 1;   // dtz3d
-  polynPow(index_tz04a - index_red_in) = 1;   // dtz4a
-  polynPow(index_tz04b - index_red_in) = 1;   // dtz4b
-  polynPow(index_tz05a - index_red_in) = 1;   // dtz5a
-  polynPow(index_tz05b - index_red_in) = 1;   // dtz5b
-  polynPow(index_tz06a - index_red_in) = 1;   // dtz6a
-  polynPow(index_tz06b - index_red_in) = 1;   // dtz6b
-  polynPow(index_tz07a - index_red_in) = 1;   // dtz7a
-  polynPow(index_tz07b - index_red_in) = 1;   // dtz7b
-  polynPow(index_tz08a - index_red_in) = 1;   // dtz8a
-  polynPow(index_tz08b - index_red_in) = 1;   // dtz8b
-  polynPow(index_tz09a - index_red_in) = 1;   // dtz9a
-  polynPow(index_tz09b - index_red_in) = 1;   // dtz9b
-  polynPow(index_tz10a - index_red_in) = 1;   // dtz10a
-  polynPow(index_tz10b - index_red_in) = 1;   // dtz10b
-  polynPow(index_tz11a - index_red_in) = 1;   // dtz11a
-  polynPow(index_tz11b - index_red_in) = 1;   // dtz11b
+  polynPow(index_out - index_in) = 1; // dtm_red_out
+  polynPow(index_tz01a - index_in) = 1;   // dtz1a
+  polynPow(index_tz01b - index_in) = 1;   // dtz1b
+  polynPow(index_tz02a - index_in) = 1;   // dtz2a
+  polynPow(index_tz02b - index_in) = 1;   // dtz2b
+  polynPow(index_tz02c - index_in) = 1;   // dtz2c
+  polynPow(index_tz02d - index_in) = 1;   // dtz2d
+  polynPow(index_tz03a - index_in) = 1;   // dtz3a
+  polynPow(index_tz03b - index_in) = 1;   // dtz3b
+  polynPow(index_tz03c - index_in) = 1;   // dtz3c
+  polynPow(index_tz03d - index_in) = 1;   // dtz3d
+  polynPow(index_tz04a - index_in) = 1;   // dtz4a
+  polynPow(index_tz04b - index_in) = 1;   // dtz4b
+  polynPow(index_tz05a - index_in) = 1;   // dtz5a
+  polynPow(index_tz05b - index_in) = 1;   // dtz5b
+  polynPow(index_tz06a - index_in) = 1;   // dtz6a
+  polynPow(index_tz06b - index_in) = 1;   // dtz6b
+  polynPow(index_tz07a - index_in) = 1;   // dtz7a
+  polynPow(index_tz07b - index_in) = 1;   // dtz7b
+  polynPow(index_tz08a - index_in) = 1;   // dtz8a
+  polynPow(index_tz08b - index_in) = 1;   // dtz8b
+  polynPow(index_tz09a - index_in) = 1;   // dtz9a
+  polynPow(index_tz09b - index_in) = 1;   // dtz9b
+  polynPow(index_tz10a - index_in) = 1;   // dtz10a
+  polynPow(index_tz10b - index_in) = 1;   // dtz10b
+  polynPow(index_tz11a - index_in) = 1;   // dtz11a
+  polynPow(index_tz11b - index_in) = 1;   // dtz11b
 end
 
 // Setting archives path, names and extension
@@ -103,46 +106,29 @@ filesArchive = [// 1 etap PI
                 'mo_2013_2_14_10_1_0';  'mo_2013_2_25_13_24_20';  'mo_2013_2_25_18_44_48'; 'mo_2013_2_25_9_58_3';
                 'mo_2013_2_26_9_28_29'; 'mo_2013_3_11_12_48_00'];
 
-path_archives = '/media/users/Oleg/work_zorya-mashproekt/export20130702/GTA_M56/Archivs/sheep2/sheep2_bort2/bort_2-all';
+path_archives = "/media/oleg/users/Oleg/work_zm/export/GTA_M56/Archivs/sheep2/sheep2_bort2/bort_2-all";
 //path_archives = "D:\work\GTA_M56\Archivs\sheep_2\bort_2-left_all";
 
 // Names of oil's temperatures
 if diag_sys == 1
-  t_name(index_gte_in) = 'tm_gte_in';
-  t_name(index_per) = 'tm_per';
-  t_name(index_tkvd) = 'tm_tkvd';
-  t_name(index_tnd) = 'tm_tnd';
-  t_name(index_tv) = 'tm_tv';
-  t_name(index_gte_out) = 'tm_gte_out';
+  t_name(index_in) = 'tm_gte_in';  t_name(index_per) = 'tm_per';
+  t_name(index_tkvd) = 'tm_tkvd';  t_name(index_tnd) = 'tm_tnd';
+  t_name(index_tv) = 'tm_tv';      t_name(index_out) = 'tm_gte_out';
 else
-  t_name(index_red_in) = 'tm_red_in';
-  t_name(index_red_out) = 'tm_red_out';
-  t_name(index_tz01a) = 'tz01a';
-  t_name(index_tz01b) = 'tz01b';
-  t_name(index_tz02a) = 'tz02a';
-  t_name(index_tz02b) = 'tz02b';
-  t_name(index_tz02c) = 'tz02c';
-  t_name(index_tz02d) = 'tz02d';
-  t_name(index_tz03a) = 'tz03a';
-  t_name(index_tz03b) = 'tz03b';
-  t_name(index_tz03c) = 'tz03c';
-  t_name(index_tz03d) = 'tz03d';
-  t_name(index_tz04a) = 'tz04a';
-  t_name(index_tz04b) = 'tz04b';
-  t_name(index_tz05a) = 'tz05a';
-  t_name(index_tz05b) = 'tz05b';
-  t_name(index_tz06a) = 'tz06a';
-  t_name(index_tz06b) = 'tz06b';
-  t_name(index_tz07a) = 'tz07a';
-  t_name(index_tz07b) = 'tz07b';
-  t_name(index_tz08a) = 'tz08a';
-  t_name(index_tz08b) = 'tz08b';
-  t_name(index_tz09a) = 'tz09a';
-  t_name(index_tz09b) = 'tz09b';
-  t_name(index_tz10a) = 'tz10a';
-  t_name(index_tz10b) = 'tz10b';
-  t_name(index_tz11a) = 'tz11a';
-  t_name(index_tz11b) = 'tz11b';
+  t_name(index_in) = 'tm_red_in';  t_name(index_out) = 'tm_red_out';
+  t_name(index_tz01a) = 'tz01a';   t_name(index_tz01b) = 'tz01b';
+  t_name(index_tz02a) = 'tz02a';   t_name(index_tz02b) = 'tz02b';
+  t_name(index_tz02c) = 'tz02c';   t_name(index_tz02d) = 'tz02d';
+  t_name(index_tz03a) = 'tz03a';   t_name(index_tz03b) = 'tz03b';
+  t_name(index_tz03c) = 'tz03c';   t_name(index_tz03d) = 'tz03d';
+  t_name(index_tz04a) = 'tz04a';   t_name(index_tz04b) = 'tz04b';
+  t_name(index_tz05a) = 'tz05a';   t_name(index_tz05b) = 'tz05b';
+  t_name(index_tz06a) = 'tz06a';   t_name(index_tz06b) = 'tz06b';
+  t_name(index_tz07a) = 'tz07a';   t_name(index_tz07b) = 'tz07b';
+  t_name(index_tz08a) = 'tz08a';   t_name(index_tz08b) = 'tz08b';
+  t_name(index_tz09a) = 'tz09a';   t_name(index_tz09b) = 'tz09b';
+  t_name(index_tz10a) = 'tz10a';   t_name(index_tz10b) = 'tz10b';
+  t_name(index_tz11a) = 'tz11a';   t_name(index_tz11b) = 'tz11b';
 end
 
 // Paths for results saving
@@ -164,6 +150,10 @@ end
 //=============================================================================================================================
 
 // INITIALIZATION
+if (index_in == 0) | (index_out == 0)
+  printf("[INFO]: The ""index_in"" or ""index_out"" is not defined in the INITIAL DATA section\n");
+  return;
+end
 count_tmParams = length(params_indexes); // quantity of the temperature
 count_dtmParams = count_tmParams - 1; // quantity of the temperatures delta's
 for i = 1 : count_dtmParams
@@ -174,23 +164,23 @@ ext_archive = 'txt'; // archives files extention
 // TODO: is this need??
 reg_all = [];
 dtm_all = [];
-// Struct for storing parameters data, readed from archive file
+// Structure for storing parameters data, readed from an archive file
 if diag_sys == 1
   index_t0 = 1;  index_Gt = 2;  index_reg = 3;  index_n2 = 4;  index_tm = 5; // parameters indexes
   params(index_t0) = struct('name', 't0', 'archIndexStart', 16, 'archIndexEnd', 18, 'data', []);
   params(index_Gt) = struct('name', 'Gt', 'archIndexStart', 120, 'archIndexEnd', 120, 'data', []);
   params(index_reg) = struct('name', 'p2', 'archIndexStart', 38, 'archIndexEnd', 38, 'data', []);
   params(index_n2) = struct('name', 'n2', 'archIndexStart', 10, 'archIndexEnd', 10, 'data', []);
-  params(index_tm) = struct('name', 'tm', 'archIndexStart', 47, 'archIndexEnd', 52, 'data', []);
+  params(index_tm) = struct('name', t_name, 'archIndexStart', 47, 'archIndexEnd', 52, 'data', []);
 else
   index_reg = 1;  index_tm = 2; // parameters indexes
   params(index_reg) = struct('name', 'ngv', 'archIndexStart', 14, 'archIndexEnd', 14, 'data', []);
-  params(index_tm) = struct('name', 'tm', 'archIndexStart', 53, 'archIndexEnd', 80, 'data', []);
+  params(index_tm) = struct('name', t_name, 'archIndexStart', 53, 'archIndexEnd', 80, 'data', []);
 end
 //=============================================================================================================================
 
 // MAIN CYCLE
-for fileIndex = 1 : size(filesArchive, 'r') // TODO: correct cycle quantity after refactoring
+for fileIndex = 1 : 3//size(filesArchive, 'r') // TODO: correct cycle quantity after refactoring
   // Deleting results that was obtained in the previous main cycle iteration
   clear reg_steady; clear tm_steady; clear dtm_steady; clear arrayNumber_steady;
   
@@ -209,7 +199,7 @@ for fileIndex = 1 : size(filesArchive, 'r') // TODO: correct cycle quantity afte
     n2 = params(index_n2).data .* alpha; // reduction to normal conditions
   end
 
-  //  Splitting the parameters arrays to sectors with defining the average values and strange
+  //  Splitting parameters arrays to sectors with defining the average values and strange
   steadyIndex = 0;
   kk = ceil(sectorLength / sectorShift); // the coefficient for correct definition the iterations quantity and correct shifting buffer with length "sectorShift" along the full length of archive
   arrSize = length(reg);
@@ -234,9 +224,10 @@ for fileIndex = 1 : size(filesArchive, 'r') // TODO: correct cycle quantity afte
     // Define the steady modes of GTE's work on sectors with length "sectorLength" seconds
     if isSteadyMode
       steadyIndex = steadyIndex + 1;
-      reg_steady(steadyIndex) = median(reg(from : to));
-      if diag_sys == 2
-        reg_steady(steadyIndex) = reg_avrg;
+      if diag_sys == 1
+        reg_steady(steadyIndex) = median(reg(from : to));
+      else
+        reg_steady(steadyIndex) = reg_avrg; // already calculated
       end
       for t = 1 : count_tmParams
         tm_steady(steadyIndex, t) = median(tm(from : to, t));
@@ -247,28 +238,88 @@ for fileIndex = 1 : size(filesArchive, 'r') // TODO: correct cycle quantity afte
   
   //  Check if in the current archive doesn't exist the steady mode points
   if steadyIndex == 0
-    scf(100); xgrid; plot2d(reg); title('Steady mode points not found. ' + params(index_reg).name + ' = f(time)', 'fontsize', 4);
     printf("[ERROR]: Steady mode points not found: archive #%i = %s, sectorLength = %i\n", fileIndex, filesArchive(fileIndex), sectorLength);
-    printf("--------------------------------------------------------------------------------------------------------\n\n");
-    return;
+    printf("Continue? (1 - yes, 2 - no)\n");
+    key = scanf("%i");
+    if key == 1
+      continue;
+    else
+      scf(1); xgrid; title('Steady mode points not found. ' + params(index_reg).name + ' = f(time)', 'fontsize', 4);
+      plot2d(reg);  e = gce(); e.children.thickness = 2;
+      printf("--------------------------------------------------------------------------------------------------------\n\n");
+      return;
+    end
   end
 
   //  Define temperature drop of oil
   for t = 1 : count_dtmParams
-    dtm_steady(:, t) = tm_steady(:, t + 1) - tm_steady(:, 1);
+    dtm_steady(:, t) = tm_steady(:, t + 1) - tm_steady(:, index_in);
   end
 
   // TODO: check this code, maybe there are need to refactor this
   // Check existence the "bad", invalid points, that is far from others points
-  if length(find(dtm_steady > 80 | dtm_steady < 0))
-    printf("[INFO]: There are found the invalid point(s): archive #%i = %s", fileIndex, filesArchive(fileIndex));
-    scf(20); xgrid;
-    plot2d(reg);
-    plot2d(arrayNumber_steady, reg_steady, -6); title('Archive #' + string(fileIndex) + ' = ' + filesArchive(fileIndex), 'fontsize', 4);
-    scf(21); xgrid;
-    plot2d(tm);
-    for i = 1 : count_tmParams
-      plot2d(arrayNumber_steady, tm_steady(:, i), -6);  
+  ind_invalidValues = find(dtm_steady > Udtm_valid_max | dtm_steady < Udtm_valid_min);
+  ind_invalidValues = [37];
+  if length(ind_invalidValues)
+    [cols_invalid_dt, rows_invalid] = calcInvalidValuePos(ind_invalidValues, size(reg_steady, 'r'));
+    str_archiveNumberName = 'archive #' + string(fileIndex) + ': ' + filesArchive(fileIndex)';
+
+    printf("[ERROR]: There are found the invalid steady mode point(s): %s\n", str_archiveNumberName);
+    printf("Continue? (1 - yes, 2 - no)\n");
+    key = scanf("%i");
+    if key == 1
+      // delete rows with invalid point(-s) for getting arrays with only valid points
+      reg_steady(rows_invalid, :) = [];
+      dtm_steady(rows_invalid, :) = [];
+      continue;
+    else
+      // define the valid steady mode points
+      reg_steady_valid = reg_steady;
+      tm_steady_valid = tm_steady;
+      arrayNumber_steady_valid = arrayNumber_steady;
+      reg_steady_valid(rows_invalid, :) = [];
+      tm_steady_valid(rows_invalid, :) = [];
+      arrayNumber_steady_valid(rows_invalid, :) = [];
+      
+      // initial data for plotting
+      kRegScale = 0.1; // scaled coefficient for plotting 'reg' parameter in same window as 'tm' parameters
+      type_validPoints = -8; // type of the marker for plotting the valid points
+      type_invalidPoints = -9; // type of the marker for plotting the invalid points
+      cols_invalid_t = cols_invalid_dt + 1; // "cols_invalid_dt + 1" for going from 'dtm' to 'tm'
+
+      windowNumber = max(winsid()) + 1;
+      scf(windowNumber); xgrid;
+      title(params(index_reg).name + ' parameter, ' + str_archiveNumberName, 'fontsize', 4);
+      // plot parameters time series graphs
+      plot2d(reg * kRegScale);  e = gce(); e.children.thickness = 2;
+      plot2d(tm(:, index_in));  e = gce(); e.children.thickness = 2;
+      plot2d(tm(:, cols_invalid_t));  e = gce(); e.children.thickness = 2; 
+      // plot invalid steady mode points
+      plot2d(arrayNumber_steady(rows_invalid), reg_steady(rows_invalid) * kRegScale, type_invalidPoints);
+      plot2d(arrayNumber_steady(rows_invalid), tm_steady(rows_invalid, index_in), type_invalidPoints);
+      plot2d(arrayNumber_steady(rows_invalid), tm_steady(rows_invalid, cols_invalid_t), type_invalidPoints);
+      // plot valid steady mode points
+      plot2d(arrayNumber_steady_valid, reg_steady_valid * kRegScale, type_validPoints);
+      plot2d(arrayNumber_steady_valid, tm_steady_valid(:, index_in), type_validPoints);
+      plot2d(arrayNumber_steady_valid, tm_steady_valid(:, cols_invalid_t), type_validPoints);
+      
+//      plot2d(arrayNumber_steady_valid, reg_steady_valid, type_validPoints); // valid points for regime parameter
+//      plot2d(arrayNumber_steady(rows_invalid, :), reg_steady(rows_invalid, :), type_invalidPoints); // invalid points for regime parameter
+//      
+//      scf(windowNumber + 1); xgrid;
+//      title('tm parameters, ' + str_archiveNumberName, 'fontsize', 4);
+//      // plot tm_in parameter
+//      plot2d(tm(:, index_in));  e = gce(); e.children.thickness = 2;
+//      plot2d(arrayNumber_steady_valid, tm_steady_valid(:, index_in), type_validPoints);
+//      plot2d(arrayNumber_steady(rows_invalid, :), tm_steady(rows_invalid, index_in), type_invalidPoints);
+//      // plot others tm parameters
+//      for i = 1 : count_tmParams
+//        plot2d(arrayNumber_steady_valid, tm_steady_valid(:, i), type_validPoints);
+//        plot2d(arrayNumber_steady(rows_invalid, :), tm_steady(rows_invalid, i), type_invalidPoints);
+//      end
+
+      return;
+      printf("--------------------------------------------------------------------------------------------------------\n\n");
     end
   end
 
@@ -286,7 +337,7 @@ count_initCharsPnts = length(Ngte_init); // quantity of points in initial charac
 if diag_sys == 1
   N_all = p2ToPower(reg_all, count_steadyModes, p2_init, Ngte_init);
 else
-  N_all = ngvToPower(ngv_steadyAll, Nnom, ngv_nom);
+  N_all = ngvToPower(reg_all, Nnom, ngv_nom);
 end
 
 //  Sort Ngte parameters array values in growing order and corresponding interchange of placements values of the "dtm" parameter arrays
@@ -326,9 +377,10 @@ strTitle = currentCalcIdentif + '\nsectorLength = ' + string(sectorLength) + ..
 //printf("\n%s\n", strTitle);
 
 //  Graphics plot
+windowNumber = max(winsid()) + 1;
 for t = 1 : count_dtmParams
   strImagesTitle = dt_name(t) + ' = f(Ngte)';
-  hWin = scf(t); plot2d(N_all, dtm_all(:, t), -9); xgrid; 
+  hWin = scf(windowNumber + t); plot2d(N_all, dtm_all(:, t), -9); xgrid; 
   title(strImagesTitle + ',  ' + str_datetime, 'fontsize', 4); // steady mode points
   hWin.figure_name = strImagesTitle;
 

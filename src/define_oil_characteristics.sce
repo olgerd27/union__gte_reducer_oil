@@ -30,7 +30,7 @@ Udtm_valid_min = 0;       // Settings dtm min value for defining the invalid poi
 Udtm_valid_max = 80;      // Settings dtm max value for defining the invalid points
 
 
-exportResToTxtFile  = 0  // Export the oil's characteristics points values in a text file: 1 - perform, 0 - don't perform
+exportResToTxtFile  = 0;  // Export the oil's characteristics points values in a text file: 1 - perform, 0 - don't perform
 exportResToImgFiles = 0;  // Export plotted the oil's characters points values in a graphics files with "png" extension:
                           // 1 - perform, 0 - don't perform
 
@@ -41,7 +41,7 @@ Ngte_init = [110.4; 273.4; 434.4; 676.5; 950.2; 1294.5; 2052.5; 2643.4; 3234.2; 
              4353.8; 5098.5; 5958.6; 7823; 9869.7; 11981; 14013.4; 16015.3; 18017.2; 20019.1];
 
 // Indexes of the oil's parameters
-index_in = 0; index_out = 0; // initial values
+index_in = 0; index_out = 0; // initialization
 if diag_sys == 1
   // TODO: Maybe delete all indexes and params_indexes here and in "else" section too... it is not used anywhere but INITIAL DATA section
   index_in = 1;  index_per = 2;  index_tkvd = 3;  index_tnd = 4;  index_tv = 5;  index_out = 6;
@@ -63,39 +63,39 @@ end
 // Polynomial powers that describe the oil's characteristics dtX = f(Ngte)
 // TODO: maybe use simply digit indexes instead of variables. This make the code more simply
 if diag_sys == 1
-  polynPow(index_per - index_in) = 2;     // dtm_per
-  polynPow(index_tkvd - index_in) = 2;    // dtm_tkvd
-  polynPow(index_tnd - index_in) = 2;     // dtm_tnd
-  polynPow(index_tv - index_in) = 2;      // dtm_tv
-  polynPow(index_out - index_in) = 2; // dtm_gte_out
+  polynPow(index_per - index_in) = 2;   // dtm_per
+  polynPow(index_tkvd - index_in) = 2;  // dtm_tkvd
+  polynPow(index_tnd - index_in) = 2;   // dtm_tnd
+  polynPow(index_tv - index_in) = 2;    // dtm_tv
+  polynPow(index_out - index_in) = 2;   // dtm_gte_out
 else
-  polynPow(index_out - index_in) = 1; // dtm_red_out
-  polynPow(index_tz01a - index_in) = 1;   // dtz1a
-  polynPow(index_tz01b - index_in) = 1;   // dtz1b
-  polynPow(index_tz02a - index_in) = 1;   // dtz2a
-  polynPow(index_tz02b - index_in) = 1;   // dtz2b
-  polynPow(index_tz02c - index_in) = 1;   // dtz2c
-  polynPow(index_tz02d - index_in) = 1;   // dtz2d
-  polynPow(index_tz03a - index_in) = 1;   // dtz3a
-  polynPow(index_tz03b - index_in) = 1;   // dtz3b
-  polynPow(index_tz03c - index_in) = 1;   // dtz3c
-  polynPow(index_tz03d - index_in) = 1;   // dtz3d
-  polynPow(index_tz04a - index_in) = 1;   // dtz4a
-  polynPow(index_tz04b - index_in) = 1;   // dtz4b
-  polynPow(index_tz05a - index_in) = 1;   // dtz5a
-  polynPow(index_tz05b - index_in) = 1;   // dtz5b
-  polynPow(index_tz06a - index_in) = 1;   // dtz6a
-  polynPow(index_tz06b - index_in) = 1;   // dtz6b
-  polynPow(index_tz07a - index_in) = 1;   // dtz7a
-  polynPow(index_tz07b - index_in) = 1;   // dtz7b
-  polynPow(index_tz08a - index_in) = 1;   // dtz8a
-  polynPow(index_tz08b - index_in) = 1;   // dtz8b
-  polynPow(index_tz09a - index_in) = 1;   // dtz9a
-  polynPow(index_tz09b - index_in) = 1;   // dtz9b
-  polynPow(index_tz10a - index_in) = 1;   // dtz10a
-  polynPow(index_tz10b - index_in) = 1;   // dtz10b
-  polynPow(index_tz11a - index_in) = 1;   // dtz11a
-  polynPow(index_tz11b - index_in) = 1;   // dtz11b
+  polynPow(index_out - index_in) = 1;   // dtm_red_out
+  polynPow(index_tz01a - index_in) = 1; // dtz1a
+  polynPow(index_tz01b - index_in) = 1; // dtz1b
+  polynPow(index_tz02a - index_in) = 1; // dtz2a
+  polynPow(index_tz02b - index_in) = 1; // dtz2b
+  polynPow(index_tz02c - index_in) = 1; // dtz2c
+  polynPow(index_tz02d - index_in) = 1; // dtz2d
+  polynPow(index_tz03a - index_in) = 1; // dtz3a
+  polynPow(index_tz03b - index_in) = 1; // dtz3b
+  polynPow(index_tz03c - index_in) = 1; // dtz3c
+  polynPow(index_tz03d - index_in) = 1; // dtz3d
+  polynPow(index_tz04a - index_in) = 1; // dtz4a
+  polynPow(index_tz04b - index_in) = 1; // dtz4b
+  polynPow(index_tz05a - index_in) = 1; // dtz5a
+  polynPow(index_tz05b - index_in) = 1; // dtz5b
+  polynPow(index_tz06a - index_in) = 1; // dtz6a
+  polynPow(index_tz06b - index_in) = 1; // dtz6b
+  polynPow(index_tz07a - index_in) = 1; // dtz7a
+  polynPow(index_tz07b - index_in) = 1; // dtz7b
+  polynPow(index_tz08a - index_in) = 1; // dtz8a
+  polynPow(index_tz08b - index_in) = 1; // dtz8b
+  polynPow(index_tz09a - index_in) = 1; // dtz9a
+  polynPow(index_tz09b - index_in) = 1; // dtz9b
+  polynPow(index_tz10a - index_in) = 1; // dtz10a
+  polynPow(index_tz10b - index_in) = 1; // dtz10b
+  polynPow(index_tz11a - index_in) = 1; // dtz11a
+  polynPow(index_tz11b - index_in) = 1; // dtz11b
 end
 
 // Setting archives path, names and extension
@@ -106,8 +106,8 @@ filesArchive = [// 1 etap PI
                 'mo_2013_2_14_10_1_0';  'mo_2013_2_25_13_24_20';  'mo_2013_2_25_18_44_48'; 'mo_2013_2_25_9_58_3';
                 'mo_2013_2_26_9_28_29'; 'mo_2013_3_11_12_48_00'];
 
-path_archives = "/media/oleg/users/Oleg/work_zm/export/GTA_M56/Archivs/sheep2/sheep2_bort2/bort_2-all";
-//path_archives = "D:\work\GTA_M56\Archivs\sheep_2\bort_2-left_all";
+//path_archives = "/media/oleg/users/Oleg/work_zm/export/GTA_M56/Archivs/sheep2/sheep2_bort2/bort_2-all";
+path_archives = "D:\work\GTA_M56\Archivs\sheep_2\bort_2-left_all";
 
 // Names of oil's temperatures
 if diag_sys == 1
@@ -132,13 +132,13 @@ else
 end
 
 // Paths for results saving
-path_res = "~/Programming/scilab/projects/union__gte_reducer_oil/out";
-//path_res = "D:\work\GTA_M56\documentation_preparing\programm_methods_initial_data\apps\union__gte_reducer_oil\out";
+//path_res = "~/Programming/scilab/projects/union__gte_reducer_oil/out";
+path_res = "D:\work\GTA_M56\documentation_preparing\programm_methods_initial_data\apps\union__gte_reducer_oil\out";
 //=============================================================================================================================
 
 // LOADING additional files with functions
-path_sourceFiles = "~/Programming/scilab/projects/union__gte_reducer_oil/src";
-//path_sourceFiles = "D:\work\GTA_M56\documentation_preparing\programm_methods_initial_data\apps\union__gte_reducer_oil\src";
+//path_sourceFiles = "~/Programming/scilab/projects/union__gte_reducer_oil/src";
+path_sourceFiles = "D:\work\GTA_M56\documentation_preparing\programm_methods_initial_data\apps\union__gte_reducer_oil\src";
 names_sourceFiles = [
                     "add_functions.sci";
                     "in_out_functions.sci";
@@ -177,6 +177,7 @@ else
   params(index_reg) = struct('name', 'ngv', 'archIndexStart', 14, 'archIndexEnd', 14, 'data', []);
   params(index_tm) = struct('name', t_name, 'archIndexStart', 53, 'archIndexEnd', 80, 'data', []);
 end
+colors = [1, 2, 3, 5, 19, 16, 27, 22, 13, 6, 9, 32, 28, 21, 25, 23, 26, 17];
 //=============================================================================================================================
 
 // MAIN CYCLE
@@ -208,20 +209,20 @@ for fileIndex = 1 : 3//size(filesArchive, 'r') // TODO: correct cycle quantity a
     to = sectorShift * j;
     arrayNumber = j * sectorShift;
 
-    // split arrays and calc strange or average values of parameters
+    // split arrays, calc strange or average values of parameters and define steady mode
     isSteadyMode = %F;
     if diag_sys == 1
       Gt_strange = strange(Gt(to - sectorLength + 1 : to)); // there are splitting and strange value calculation
       n2_avrg = median(n2(from : to));
       Gt_avrg = median(Gt(from : to));
-      isSteadyMode = (Gt_strange <= UGt_strange) & (n2_avrg > Un2_xx) & (Gt_avrg > 0);
+      isSteadyMode = (Gt_strange <= UGt_strange) & (n2_avrg > Un2_xx) & (Gt_avrg > 0); // define steady mode
     else
       reg_strange = strange(reg(to - sectorLength + 1 : to));
       reg_avrg = median(reg(from : to));
-      isSteadyMode = (reg_strange <= Ungv_strange) & (reg_avrg > Ungv_min);
+      isSteadyMode = (reg_strange <= Ungv_strange) & (reg_avrg > Ungv_min); // define steady mode
     end
 
-    // Define the steady modes of GTE's work on sectors with length "sectorLength" seconds
+    // Processing the steady modes of GTE's work points values
     if isSteadyMode
       steadyIndex = steadyIndex + 1;
       if diag_sys == 1
@@ -259,67 +260,78 @@ for fileIndex = 1 : 3//size(filesArchive, 'r') // TODO: correct cycle quantity a
   // TODO: check this code, maybe there are need to refactor this
   // Check existence the "bad", invalid points, that is far from others points
   ind_invalidValues = find(dtm_steady > Udtm_valid_max | dtm_steady < Udtm_valid_min);
-  ind_invalidValues = [37];
-  if length(ind_invalidValues)
+  count_invalidPoints = length(ind_invalidValues);
+  if count_invalidPoints
     [cols_invalid_dt, rows_invalid] = calcInvalidValuePos(ind_invalidValues, size(reg_steady, 'r'));
+    rows_invalid_u = unique(rows_invalid);
     str_archiveNumberName = 'archive #' + string(fileIndex) + ': ' + filesArchive(fileIndex)';
 
-    printf("[ERROR]: There are found the invalid steady mode point(s): %s\n", str_archiveNumberName);
+    printf("[ERROR]: There was found %i invalid steady mode point(s) in the %s\n", count_invalidPoints, str_archiveNumberName);
+    for i = 1 : count_invalidPoints
+      printf("\tpoint #%i: parameter = ''%s'', number = %i\n", i, dt_name(cols_invalid_dt(i)), rows_invalid(i));
+    end
+    
     printf("Continue? (1 - yes, 2 - no)\n");
     key = scanf("%i");
     if key == 1
       // delete rows with invalid point(-s) for getting arrays with only valid points
-      reg_steady(rows_invalid, :) = [];
-      dtm_steady(rows_invalid, :) = [];
+      reg_steady(rows_invalid_u, :) = [];
+      dtm_steady(rows_invalid_u, :) = [];
       continue;
     else
       // define the valid steady mode points
-      reg_steady_valid = reg_steady;
-      tm_steady_valid = tm_steady;
-      arrayNumber_steady_valid = arrayNumber_steady;
-      reg_steady_valid(rows_invalid, :) = [];
-      tm_steady_valid(rows_invalid, :) = [];
-      arrayNumber_steady_valid(rows_invalid, :) = [];
+      reg_steady_valid = reg_steady;  reg_steady_valid(rows_invalid_u, :) = [];
+      tm_steady_valid = tm_steady;  tm_steady_valid(rows_invalid_u, :) = [];
+      arrayNumber_steady_valid = arrayNumber_steady;  arrayNumber_steady_valid(rows_invalid_u, :) = [];
       
-      // initial data for plotting
+      // Initial data for plotting
+      x_time = [0 : length(reg) - 1]; // X-value for plotting
       kRegScale = 0.1; // scaled coefficient for plotting 'reg' parameter in same window as 'tm' parameters
       type_validPoints = -8; // type of the marker for plotting the valid points
       type_invalidPoints = -9; // type of the marker for plotting the invalid points
-      cols_invalid_t = cols_invalid_dt + 1; // "cols_invalid_dt + 1" for going from 'dtm' to 'tm'
+      legend_str = [];
+      cols_invalid_t = cols_invalid_dt + 1; // conversion columns number from 'dtm' parameter to 'tm'
+      cols_invalid_t_u = unique(cols_invalid_t); // numbers of the parameters with invalid steady mode points
+      count_invalidParams = length(cols_invalid_t_u); // quantity of the parameters with invalid steady mode points
 
+      // plot window settings
       windowNumber = max(winsid()) + 1;
-      scf(windowNumber); xgrid;
-      title(params(index_reg).name + ' parameter, ' + str_archiveNumberName, 'fontsize', 4);
-      // plot parameters time series graphs
-      plot2d(reg * kRegScale);  e = gce(); e.children.thickness = 2;
-      plot2d(tm(:, index_in));  e = gce(); e.children.thickness = 2;
-      plot2d(tm(:, cols_invalid_t));  e = gce(); e.children.thickness = 2; 
-      // plot invalid steady mode points
-      plot2d(arrayNumber_steady(rows_invalid), reg_steady(rows_invalid) * kRegScale, type_invalidPoints);
-      plot2d(arrayNumber_steady(rows_invalid), tm_steady(rows_invalid, index_in), type_invalidPoints);
-      plot2d(arrayNumber_steady(rows_invalid), tm_steady(rows_invalid, cols_invalid_t), type_invalidPoints);
-      // plot valid steady mode points
-      plot2d(arrayNumber_steady_valid, reg_steady_valid * kRegScale, type_validPoints);
-      plot2d(arrayNumber_steady_valid, tm_steady_valid(:, index_in), type_validPoints);
-      plot2d(arrayNumber_steady_valid, tm_steady_valid(:, cols_invalid_t), type_validPoints);
+      strTitle = 'Invalid points, ' + str_archiveNumberName;
+      hPlot = scf(windowNumber); xgrid;
+      hPlot.figure_name = strTitle;
+      title(strTitle, 'fontsize', 4);
       
-//      plot2d(arrayNumber_steady_valid, reg_steady_valid, type_validPoints); // valid points for regime parameter
-//      plot2d(arrayNumber_steady(rows_invalid, :), reg_steady(rows_invalid, :), type_invalidPoints); // invalid points for regime parameter
-//      
-//      scf(windowNumber + 1); xgrid;
-//      title('tm parameters, ' + str_archiveNumberName, 'fontsize', 4);
-//      // plot tm_in parameter
-//      plot2d(tm(:, index_in));  e = gce(); e.children.thickness = 2;
-//      plot2d(arrayNumber_steady_valid, tm_steady_valid(:, index_in), type_validPoints);
-//      plot2d(arrayNumber_steady(rows_invalid, :), tm_steady(rows_invalid, index_in), type_invalidPoints);
-//      // plot others tm parameters
-//      for i = 1 : count_tmParams
-//        plot2d(arrayNumber_steady_valid, tm_steady_valid(:, i), type_validPoints);
-//        plot2d(arrayNumber_steady(rows_invalid, :), tm_steady(rows_invalid, i), type_invalidPoints);
-//      end
+      // plot parameters time series graphs
+      plot2d(x_time, reg * kRegScale, colors(1));  e = gce(); e.children.thickness = 2;
+      legend_str = [legend_str; params(index_reg).name];
+      plot2d(x_time, tm(:, index_in), colors(2));  e = gce(); e.children.thickness = 2;
+      legend_str = [legend_str; t_name(index_in)];
+      for i = 1 : count_invalidParams
+        plot2d(x_time, tm(:, cols_invalid_t_u(i)), colors(i + 2));  e = gce(); e.children.thickness = 2;
+        legend_str = [legend_str; t_name(cols_invalid_t_u(i))];
+      end
+      legend(hPlot, legend_str, 1);
 
-      return;
+      // plot invalid steady mode points
+      plot2d(arrayNumber_steady(rows_invalid_u), reg_steady(rows_invalid_u) * kRegScale, type_invalidPoints);
+      plot2d(arrayNumber_steady(rows_invalid_u), tm_steady(rows_invalid_u, index_in), type_invalidPoints);
+      for i = 1 : count_invalidPoints
+        plot2d(arrayNumber_steady(rows_invalid(i)), tm_steady(rows_invalid(i), cols_invalid_t(i)), type_invalidPoints);
+      end
+
+      // plot valid steady mode points
+      if length(reg_steady_valid) ~= 0
+        plot2d(arrayNumber_steady_valid, reg_steady_valid * kRegScale, type_validPoints);
+        plot2d(arrayNumber_steady_valid, tm_steady_valid(:, index_in), type_validPoints);
+        for i = 1 : count_invalidParams
+          plot2d(arrayNumber_steady_valid, tm_steady_valid(:, cols_invalid_t_u(i)), type_validPoints);
+        end
+      else
+        printf("[INFO]: None steady mode, founded in current archive, is valid\n");
+      end
+
       printf("--------------------------------------------------------------------------------------------------------\n\n");
+      return;
     end
   end
 

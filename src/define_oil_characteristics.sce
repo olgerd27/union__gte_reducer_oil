@@ -106,8 +106,8 @@ filesArchive = [// 1 etap PI
                 'mo_2013_2_14_10_1_0';  'mo_2013_2_25_13_24_20';  'mo_2013_2_25_18_44_48'; 'mo_2013_2_25_9_58_3';
                 'mo_2013_2_26_9_28_29'; 'mo_2013_3_11_12_48_00'];
 
-//path_archives = "/media/oleg/users/Oleg/work_zm/export/GTA_M56/Archivs/sheep2/sheep2_bort2/bort_2-all";
-path_archives = "D:\work\GTA_M56\Archivs\sheep_2\bort_2-left_all";
+path_archives = "/media/oleg/users/Oleg/work_zm/export/GTA_M56/Archivs/sheep2/sheep2_bort2/bort_2-all";
+//path_archives = "D:\work\GTA_M56\Archivs\sheep_2\bort_2-left_all";
 
 // Names of oil's temperatures
 if diag_sys == 1
@@ -132,13 +132,13 @@ else
 end
 
 // Paths for results saving
-//path_res = "~/Programming/scilab/projects/union__gte_reducer_oil/out";
-path_res = "D:\work\GTA_M56\documentation_preparing\programm_methods_initial_data\apps\union__gte_reducer_oil\out";
+path_res = "~/Programming/scilab/projects/union__gte_reducer_oil/out";
+//path_res = "D:\work\GTA_M56\documentation_preparing\programm_methods_initial_data\apps\union__gte_reducer_oil\out";
 //=============================================================================================================================
 
 // LOADING additional files with functions
-//path_sourceFiles = "~/Programming/scilab/projects/union__gte_reducer_oil/src";
-path_sourceFiles = "D:\work\GTA_M56\documentation_preparing\programm_methods_initial_data\apps\union__gte_reducer_oil\src";
+path_sourceFiles = "~/Programming/scilab/projects/union__gte_reducer_oil/src";
+//path_sourceFiles = "D:\work\GTA_M56\documentation_preparing\programm_methods_initial_data\apps\union__gte_reducer_oil\src";
 names_sourceFiles = [
                     "add_functions.sci";
                     "in_out_functions.sci";
@@ -279,57 +279,10 @@ for fileIndex = 1 : 3//size(filesArchive, 'r') // TODO: correct cycle quantity a
       dtm_steady(rows_invalid_u, :) = [];
       continue;
     else
-      // define the valid steady mode points
-      reg_steady_valid = reg_steady;  reg_steady_valid(rows_invalid_u, :) = [];
-      tm_steady_valid = tm_steady;  tm_steady_valid(rows_invalid_u, :) = [];
-      arrayNumber_steady_valid = arrayNumber_steady;  arrayNumber_steady_valid(rows_invalid_u, :) = [];
-      
-      // Initial data for plotting
-      x_time = [0 : length(reg) - 1]; // X-value for plotting
-      kRegScale = 0.1; // scaled coefficient for plotting 'reg' parameter in same window as 'tm' parameters
-      type_validPoints = -8; // type of the marker for plotting the valid points
-      type_invalidPoints = -9; // type of the marker for plotting the invalid points
-      legend_str = [];
-      cols_invalid_t = cols_invalid_dt + 1; // conversion columns number from 'dtm' parameter to 'tm'
-      cols_invalid_t_u = unique(cols_invalid_t); // numbers of the parameters with invalid steady mode points
-      count_invalidParams = length(cols_invalid_t_u); // quantity of the parameters with invalid steady mode points
-
-      // plot window settings
-      windowNumber = max(winsid()) + 1;
-      strTitle = 'Invalid points, ' + str_archiveNumberName;
-      hPlot = scf(windowNumber); xgrid;
-      hPlot.figure_name = strTitle;
-      title(strTitle, 'fontsize', 4);
-      
-      // plot parameters time series graphs
-      plot2d(x_time, reg * kRegScale, colors(1));  e = gce(); e.children.thickness = 2;
-      legend_str = [legend_str; params(index_reg).name];
-      plot2d(x_time, tm(:, index_in), colors(2));  e = gce(); e.children.thickness = 2;
-      legend_str = [legend_str; t_name(index_in)];
-      for i = 1 : count_invalidParams
-        plot2d(x_time, tm(:, cols_invalid_t_u(i)), colors(i + 2));  e = gce(); e.children.thickness = 2;
-        legend_str = [legend_str; t_name(cols_invalid_t_u(i))];
-      end
-      legend(hPlot, legend_str, 1);
-
-      // plot invalid steady mode points
-      plot2d(arrayNumber_steady(rows_invalid_u), reg_steady(rows_invalid_u) * kRegScale, type_invalidPoints);
-      plot2d(arrayNumber_steady(rows_invalid_u), tm_steady(rows_invalid_u, index_in), type_invalidPoints);
-      for i = 1 : count_invalidPoints
-        plot2d(arrayNumber_steady(rows_invalid(i)), tm_steady(rows_invalid(i), cols_invalid_t(i)), type_invalidPoints);
-      end
-
-      // plot valid steady mode points
-      if length(reg_steady_valid) ~= 0
-        plot2d(arrayNumber_steady_valid, reg_steady_valid * kRegScale, type_validPoints);
-        plot2d(arrayNumber_steady_valid, tm_steady_valid(:, index_in), type_validPoints);
-        for i = 1 : count_invalidParams
-          plot2d(arrayNumber_steady_valid, tm_steady_valid(:, cols_invalid_t_u(i)), type_validPoints);
-        end
-      else
-        printf("[INFO]: None steady mode, founded in current archive, is valid\n");
-      end
-
+      plotInvalidArchive( reg, tm, reg_steady, tm_steady, arrayNumber_steady, ..
+                                       cols_invalid_dt, rows_invalid, rows_invalid_u, ..
+                                       index_in, params(index_reg).name, t_name, ..
+                                       str_archiveNumberName, colors );
       printf("--------------------------------------------------------------------------------------------------------\n\n");
       return;
     end

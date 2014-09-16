@@ -1,5 +1,4 @@
 //  PERFORMING A DEFINITION OF GTE's and OIL's SYSTEMS CHARACTERISTICS
-
 tic;
 xdel(winsid());
 clear;
@@ -9,7 +8,7 @@ printf("* START application *\n");
 printf("*********************\n");
 
 //  INITIAL DATA
-diag_sys = 2;             // PKSTD diagnostics system: 1 - GTE oil's system, 2 - reducer oil's system
+diag_sys = 1;             // PKSTD diagnostics system: 1 - GTE oil's system, 2 - reducer oil's system
 sheep = 2;                // Sheep number
 board = 2;                // Board: 1 - right, 2 - left
 
@@ -29,8 +28,7 @@ end
 Udtm_valid_min = 0;       // Settings dtm min value for defining the invalid points
 Udtm_valid_max = 80;      // Settings dtm max value for defining the invalid points
 
-
-exportResToTxtFile  = 0;  // Export the oil's characteristics points values in a text file: 1 - perform, 0 - don't perform
+exportResToTxtFile  = 0;  // Export the oil's characteristics points values in a text file:  1 - perform, 0 - don't perform
 exportResToImgFiles = 0;  // Export plotted the oil's characters points values in a graphics files with "png" extension:
                           // 1 - perform, 0 - don't perform
 
@@ -41,11 +39,9 @@ Ngte_init = [110.4; 273.4; 434.4; 676.5; 950.2; 1294.5; 2052.5; 2643.4; 3234.2; 
              4353.8; 5098.5; 5958.6; 7823; 9869.7; 11981; 14013.4; 16015.3; 18017.2; 20019.1];
 
 // Indexes of the oil's parameters
-index_in = 0; index_out = 0; // initialization
+INIT_VALUE = 0;  index_in = INIT_VALUE; index_out = INIT_VALUE; // initialization
 if diag_sys == 1
-  // TODO: Maybe delete all indexes and params_indexes here and in "else" section too... it is not used anywhere but INITIAL DATA section
   index_in = 1;  index_per = 2;  index_tkvd = 3;  index_tnd = 4;  index_tv = 5;  index_out = 6;
-  params_indexes = [index_in; index_per; index_tkvd; index_tnd; index_tv; index_out];
 else
   index_in = 1;      index_out = 2;
   index_tz01a =  3;  index_tz01b =  4;  index_tz02a =  5;  index_tz02b =  6;  index_tz02c =  7;  index_tz02d =  8;
@@ -53,15 +49,9 @@ else
   index_tz05a = 15;  index_tz05b = 16;  index_tz06a = 17;  index_tz06b = 18;  index_tz07a = 19;  index_tz07b = 20;
   index_tz08a = 21;  index_tz08b = 22;  index_tz09a = 23;  index_tz09b = 24;  index_tz10a = 25;  index_tz10b = 26;
   index_tz11a = 27;  index_tz11b = 28;
-  params_indexes = [index_in; index_out; 
-    index_tz01a; index_tz01b; index_tz02a; index_tz02b; index_tz02c; index_tz02d; index_tz03a; index_tz03b; 
-    index_tz03c; index_tz03d; index_tz04a; index_tz04b; index_tz05a; index_tz05b; index_tz06a; index_tz06b;
-    index_tz07a; index_tz07b; index_tz08a; index_tz08b; index_tz09a; index_tz09b; index_tz10a; index_tz10b;
-    index_tz11a; index_tz11b];
 end
 
 // Polynomial powers that describe the oil's characteristics dtX = f(Ngte)
-// TODO: maybe use simply digit indexes instead of variables. This make the code more simply
 if diag_sys == 1
   polynPow(index_per - index_in) = 2;   // dtm_per
   polynPow(index_tkvd - index_in) = 2;  // dtm_tkvd
@@ -106,8 +96,8 @@ filesArchive = [// 1 etap PI
                 'mo_2013_2_14_10_1_0';  'mo_2013_2_25_13_24_20';  'mo_2013_2_25_18_44_48'; 'mo_2013_2_25_9_58_3';
                 'mo_2013_2_26_9_28_29'; 'mo_2013_3_11_12_48_00'];
 
-path_archives = "/media/oleg/users/Oleg/work_zm/export/GTA_M56/Archivs/sheep2/sheep2_bort2/bort_2-all";
-//path_archives = "D:\work\GTA_M56\Archivs\sheep_2\bort_2-left_all";
+//path_archives = "/media/oleg/users/Oleg/work_zm/export/GTA_M56/Archivs/sheep2/sheep2_bort2/bort_2-all";
+path_archives = "D:\work\GTA_M56\Archivs\sheep_2\bort_2-left_all";
 
 // Names of oil's temperatures
 if diag_sys == 1
@@ -132,13 +122,13 @@ else
 end
 
 // Paths for results saving
-path_res = "~/Programming/scilab/projects/union__gte_reducer_oil/out";
-//path_res = "D:\work\GTA_M56\documentation_preparing\programm_methods_initial_data\apps\union__gte_reducer_oil\out";
+//path_res = "~/Programming/scilab/projects/union__gte_reducer_oil/out";
+path_res = "D:\work\GTA_M56\documentation_preparing\programm_methods_initial_data\apps\union__gte_reducer_oil\out";
 //=============================================================================================================================
 
 // LOADING additional files with functions
-path_sourceFiles = "~/Programming/scilab/projects/union__gte_reducer_oil/src";
-//path_sourceFiles = "D:\work\GTA_M56\documentation_preparing\programm_methods_initial_data\apps\union__gte_reducer_oil\src";
+//path_sourceFiles = "~/Programming/scilab/projects/union__gte_reducer_oil/src";
+path_sourceFiles = "D:\work\GTA_M56\documentation_preparing\programm_methods_initial_data\apps\union__gte_reducer_oil\src";
 names_sourceFiles = [
                     "add_functions.sci";
                     "in_out_functions.sci";
@@ -150,20 +140,35 @@ end
 //=============================================================================================================================
 
 // INITIALIZATION
-if (index_in == 0) | (index_out == 0)
+// index_in and index_out
+if (index_in == INIT_VALUE) | (index_out == INIT_VALUE)
   printf("[INFO]: The ""index_in"" or ""index_out"" is not defined in the INITIAL DATA section\n");
   return;
 end
+
+// params indexes arrays 
+if diag_sys == 1
+  params_indexes = [index_in; index_per; index_tkvd; index_tnd; index_tv; index_out];
+else
+  params_indexes = [index_in; index_out; 
+    index_tz01a; index_tz01b; index_tz02a; index_tz02b; index_tz02c; index_tz02d; index_tz03a; index_tz03b; 
+    index_tz03c; index_tz03d; index_tz04a; index_tz04b; index_tz05a; index_tz05b; index_tz06a; index_tz06b;
+    index_tz07a; index_tz07b; index_tz08a; index_tz08b; index_tz09a; index_tz09b; index_tz10a; index_tz10b;
+    index_tz11a; index_tz11b];
+end
+
 count_tmParams = length(params_indexes); // quantity of the temperature
 count_dtmParams = count_tmParams - 1; // quantity of the temperatures delta's
+
 for i = 1 : count_dtmParams
   dt_name(i) = 'd' + t_name(i + 1); // names of the temperatures delta's
 end
 ext_archive = 'txt'; // archives files extention
+
 // Arrays for storing steady mode points values
-// TODO: is this need??
 reg_all = [];
 dtm_all = [];
+
 // Structure for storing parameters data, readed from an archive file
 if diag_sys == 1
   index_t0 = 1;  index_Gt = 2;  index_reg = 3;  index_n2 = 4;  index_tm = 5; // parameters indexes
@@ -181,7 +186,7 @@ colors = [1, 2, 3, 5, 19, 16, 27, 22, 13, 6, 9, 32, 28, 21, 25, 23, 26, 17];
 //=============================================================================================================================
 
 // MAIN CYCLE
-for fileIndex = 1 : 3//size(filesArchive, 'r') // TODO: correct cycle quantity after refactoring
+for fileIndex = 1 : size(filesArchive, 'r')
   // Deleting results that was obtained in the previous main cycle iteration
   clear reg_steady; clear tm_steady; clear dtm_steady; clear arrayNumber_steady;
   
@@ -257,7 +262,6 @@ for fileIndex = 1 : 3//size(filesArchive, 'r') // TODO: correct cycle quantity a
     dtm_steady(:, t) = tm_steady(:, t + 1) - tm_steady(:, index_in);
   end
 
-  // TODO: check this code, maybe there are need to refactor this
   // Check existence the "bad", invalid points, that is far from others points
   ind_invalidValues = find(dtm_steady > Udtm_valid_max | dtm_steady < Udtm_valid_min);
   count_invalidPoints = length(ind_invalidValues);
@@ -280,9 +284,9 @@ for fileIndex = 1 : 3//size(filesArchive, 'r') // TODO: correct cycle quantity a
       continue;
     else
       plotInvalidArchive( reg, tm, reg_steady, tm_steady, arrayNumber_steady, ..
-                                       cols_invalid_dt, rows_invalid, rows_invalid_u, ..
-                                       index_in, params(index_reg).name, t_name, ..
-                                       str_archiveNumberName, colors );
+                          cols_invalid_dt, rows_invalid, rows_invalid_u, ..
+                          index_in, params(index_reg).name, t_name, ..
+                          str_archiveNumberName, colors );
       printf("--------------------------------------------------------------------------------------------------------\n\n");
       return;
     end

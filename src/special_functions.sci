@@ -47,23 +47,23 @@ function plotInvalidArchive( reg, tm, reg_steady, tm_steady, arrayNumber_steady,
                              cols_invalid_dt, rows_invalid, rows_invalid_u, ..
                              index_in, reg_name, t_name, ..
                              str_archiveNumberName, colors )
-//***************************************************************************************************
-// Function for plotting archive parameters with the invalid steady mode points.                                       *
-// IN:  reg - the regime parameter time series                                                                                                  *
-//      tm - the temperature parameters time series                                                                                          *
-//      reg_steady - the regime parameter steady mode points                                                                        *
-//      tm_steady - the temperature parameter steady mode points                                                                *
-//      arrayNumber_steady - the steady mode points of array numbers                                                         *
-//      cols_invalid_dt - the number(-s) of columns with invalid point(-s) value(-s) (if use 'dt' parameter) *
-//      rows_invalid - the number(-s) of rows with invalid point(-s) value(-s)                                                *
-//      rows_invalid_u - the unique values from the 'rows_invalid' arrays                                                        *
-//      index_in - the number of the index temperature at the entry                                                               *
-//      reg_name - the name of the regime parameter                                                                                       *
-//      t_name - the array of the temperatures names                                                                                        *
-//      str_archiveNumberName - the string of union information about number and name archive           *
-//      colors - the colors indexes arrays                                                                                                              *
-// OUT: ---                                                                                                                                                             *
-//****************************************************************************************************
+//*************************************************************************************************************
+// Function for plotting archive parameters with the invalid steady mode points.                              *
+// IN:  reg - the regime parameter time series                                                                *
+//      tm - the temperature parameters time series                                                           *
+//      reg_steady - the regime parameter steady mode points                                                  *
+//      tm_steady - the temperature parameter steady mode points                                              *
+//      arrayNumber_steady - the steady mode points of array numbers                                          *
+//      cols_invalid_dt - the number(-s) of columns with invalid point(-s) value(-s) (if use 'dt' parameter)  *
+//      rows_invalid - the number(-s) of rows with invalid point(-s) value(-s)                                *
+//      rows_invalid_u - the unique values from the 'rows_invalid' arrays                                     *
+//      index_in - the number of the index temperature at the entry                                           *
+//      reg_name - the name of the regime parameter                                                           *
+//      t_name - the array of the temperatures names                                                          *
+//      str_archiveNumberName - the string of union information about number and name archive                 *
+//      colors - the colors indexes arrays                                                                    *
+// OUT: ---                                                                                                   *
+//*************************************************************************************************************
   // define the valid steady mode points
   reg_steady_valid = reg_steady;  reg_steady_valid(rows_invalid_u, :) = [];
   tm_steady_valid = tm_steady;  tm_steady_valid(rows_invalid_u, :) = [];

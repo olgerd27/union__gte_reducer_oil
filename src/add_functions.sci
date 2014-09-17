@@ -58,6 +58,17 @@ function yu = interExtraPolation(x, y, xu)
   end
 endfunction
 
+function forc_y = forecastValues(x1, y1, x2, y2, forc_x)
+//*****************************************************************************************************
+// Calculation the forecast value Y for given model and future value X-argument (linear forecasting)  *
+// IN:  x - array values of model                                                                     *
+//      y - array values of model                                                                     *
+//      SIZE - the 'x' and 'y' arrays size (arrays must have the same sizes)                          *
+//      forc_x - the x-argument value                                                                 *
+// OUT: forc_y - the forecasted value                                                                 *
+//*****************************************************************************************************
+  forc_y = (forc_x - x1) * (y2 - y1) / (x2 - x1) + y1;  
+endfunction
 
 // Approximation
 function coef = coeffs_trend_n(x, y, n)

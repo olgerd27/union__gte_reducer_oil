@@ -1,4 +1,6 @@
-// Special functions
+// SPECIAL FUNCTIONS
+
+// The power (N) defining
 function N = p2ToPower(p2, count, p2_characs, N_characs)
 //*****************************************************************************************
 // Define the GTE's power values (Ngte) with yhe help of the characteristics Ngte = f(p2) *
@@ -72,7 +74,7 @@ function plotInvalidArchive( reg, tm, reg_steady, tm_steady, arrayNumber_steady,
   // Initial data for plotting
   x_time = [0 : length(reg) - 1]; // X-value for plotting
   kRegScale = 0.1; // scaled coefficient for plotting 'reg' parameter in same window as 'tm' parameters
-  type_validPoints = -8; // type of the marker for plotting the valid points
+  type_validPoints = -3; // type of the marker for plotting the valid points
   type_invalidPoints = -9; // type of the marker for plotting the invalid points
   legend_str = [];
   cols_invalid_t = cols_invalid_dt + 1; // conversion columns number from 'dtm' parameter to 'tm'

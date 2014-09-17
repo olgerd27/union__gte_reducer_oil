@@ -14,12 +14,16 @@ board = 2;                // Board: 1 - right, 2 - left
 
 sectorLength = 900;       // Length of splitting sectors
 sectorShift = 300;        // Shift of sector with length sectorLength in every main cycle iteration
+modelLength = 300;        // Length of the data model for performing of the forecasting temperature parameters on steady modes
+
 if diag_sys == 1
   UGt_strange = 10;       // Settings Gt strange for defining the steady modes of GTE's work
   Un2_xx = 5500;          // Settings XX by n2 parameter for defining the steady modes of GTE's work
+  forecastInterval = 100; // Interval for the forecasting temperature parameters on steady modes
 else
   Ungv_strange = 5;       // Settings ngv strange for defining the steady modes of reducer's work
   Ungv_min = 40;          // Settings ngv min value for defining the steady modes of reducer's work
+  forecastInterval = 200; // Interval for the forecasting temperature parameters on steady modes
 
   Nnom = 20020;           // the reducer power on the nominal reducer's work mode
   ngv_nom = 240;          // rotation speed of the reducer outlet shaft on the nominal reducer's work mode
@@ -235,9 +239,27 @@ for fileIndex = 1 : size(filesArchive, 'r')
       else
         reg_steady(steadyIndex) = reg_avrg; // already calculated
       end
+      //--------------------------------------------------------------------------------------------------------
+      forecastTo = to + forecastInterval; // the value for forecasting 'tm' values in steady mode of work
+      xModel = [arrayNumber - modelLength + 1 : arrayNumber]';
+      
+//      if steadyIndex == 1
+//        scf(1); xgrid;
+//        plot2d(1 : length(reg), reg, 1);
+//        plot2d(xModel, reg(from : to), -2); e = gce();
+//      end
+      
       for t = 1 : count_tmParams
-        tm_steady(steadyIndex, t) = median(tm(from : to, t));
+//        tm_steady(steadyIndex, t) = median(tm(from : to, t)); // old version
+        yModel = tm(from : to, t);
+        tm_steady(steadyIndex, t) = forecastValues(xModel(1), yModel(1), xModel(modelLength), yModel(modelLength), forecastTo);
+        
+//        plot2d(1 : length(reg), tm(:, t), colors(t + 1));
+//        plot2d(xModel, tm(from : to, t), -2);
+//        plot2d([from, to], [tm(from, t), tm(to, t)], [13]); e = gce(); e.children.thickness = 3;
+//        plot2d([to, forecastTo], [tm(to, t), tm_steady_value], [5]); e = gce(); e.children.line_style = 3; e.children.thickness = 3;
       end
+      //--------------------------------------------------------------------------------------------------------
       arrayNumber_steady(steadyIndex) = arrayNumber;
     end
   end
@@ -281,7 +303,6 @@ for fileIndex = 1 : size(filesArchive, 'r')
       // delete rows with invalid point(-s) for getting arrays with only valid points
       reg_steady(rows_invalid_u, :) = [];
       dtm_steady(rows_invalid_u, :) = [];
-      continue;
     else
       plotInvalidArchive( reg, tm, reg_steady, tm_steady, arrayNumber_steady, ..
                           cols_invalid_dt, rows_invalid, rows_invalid_u, ..
@@ -314,6 +335,8 @@ end
 
 //  Steady mode points approximation for obtaining the results characteristics
 dtm_apr = approximation(N_all, dtm_all, Ngte_init, polynPow, count_initCharsPnts, count_dtmParams);
+
+// TODO: calc variance of the normalized steady mode points
 
 printf("[INFO]: Characteristics was defined. Steady mode points quantity: %i\n", count_steadyModes);
 //=============================================================================================================================

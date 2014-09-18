@@ -1,5 +1,26 @@
 // SPECIAL FUNCTIONS
 
+function [y_apr, forc_y] = linearForecastValues(xArr, yArr, forc_x)
+//**********************************************************************************************
+// Calculation the forecast value Y for given model and argument value X (linear forecasting)  *
+// IN:  x - array values of model                                                              *
+//      y - array values of model                                                              *
+//      forc_x - the x-argument value                                                          *
+// OUT: forc_y - the forecasted value                                                          *
+//**********************************************************************************************
+  power = 1;
+  Nrows = size(yArr, 'r'); Ncols = size(yArr, 'c');
+  y_apr(Nrows, Ncols) = 0;
+  forc_y(Ncols) = 0;
+  for i = 1 : Ncols
+    coefs = coeffs_trend_n(xArr, yArr(:, i), power);
+    for j = 1 : power + 1
+      y_apr(:, i) = y_apr(:, i) + coefs(j) * xArr .^ (power + 1 - j);
+      forc_y(i) = forc_y(i) + coefs(j) * forc_x .^ (power + 1 - j);
+    end
+  end
+endfunction
+
 // The power (N) defining
 function N = p2ToPower(p2, count, p2_characs, N_characs)
 //*****************************************************************************************

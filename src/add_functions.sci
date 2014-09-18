@@ -5,7 +5,6 @@ function [x, y] = sortByX(x, y)
 // Sorting by "x" array. Others arrays, that stores in "y" variable,  *
 // will be sorted in accordance with with "x" array.                  *
 //*********************************************************************
-
   n = length(x);
   col = size(y, 'c');
   for j = 1 : n
@@ -32,7 +31,6 @@ function yu = interExtraPolation(x, y, xu)
 //********************************************************
 // The function of the linear inter- and extrapolations  *
 //********************************************************
-
   n = length(x);
   i = 2;
   while (xu > x(i))
@@ -58,18 +56,6 @@ function yu = interExtraPolation(x, y, xu)
   end
 endfunction
 
-function forc_y = forecastValues(x1, y1, x2, y2, forc_x)
-//*****************************************************************************************************
-// Calculation the forecast value Y for given model and future value X-argument (linear forecasting)  *
-// IN:  x - array values of model                                                                     *
-//      y - array values of model                                                                     *
-//      SIZE - the 'x' and 'y' arrays size (arrays must have the same sizes)                          *
-//      forc_x - the x-argument value                                                                 *
-// OUT: forc_y - the forecasted value                                                                 *
-//*****************************************************************************************************
-  forc_y = (forc_x - x1) * (y2 - y1) / (x2 - x1) + y1;  
-endfunction
-
 // Approximation
 function coef = coeffs_trend_n(x, y, n)
 //*****************************************************************
@@ -78,7 +64,6 @@ function coef = coeffs_trend_n(x, y, n)
 //      n - the polynomial power value                            *
 // Out: the trend coefficients: a, b, c, d ... - coef(1 2 3 4...) *
 //*****************************************************************
-
   M = 2 * n + 1;
   
   for j = 1 : n + 1

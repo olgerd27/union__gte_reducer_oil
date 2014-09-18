@@ -240,39 +240,15 @@ for fileIndex = 1 : size(filesArchive, 'r')
         reg_steady(steadyIndex) = reg_avrg; // already calculated
       end
       //--------------------------------------------------------------------------------------------------------
-      forecastTo = to + forecastInterval; // the value for forecasting 'tm' values in steady mode of work
+      // calculate the 'tm' values in steady mode of work
+      forecastTo = to + forecastInterval; // the argument-value for forecasting
       xModel = [arrayNumber - modelLength + 1 : arrayNumber]';
       yModel = tm(from : to, :);
-      [apr, forec] = linearForecastValues(xModel, yModel, forecastTo);
-
-      xAll = [1 : length(reg)];
-      if steadyIndex == 1
-        scf(1); xgrid;
-        plot2d(xAll, reg, 1);
-        plot2d(xModel, reg(from : to), -2); e = gce();
-      end
-      for t = 1 : count_tmParams
-        plot2d(xAll, tm(:, t), colors(t + 1));
-        plot2d(xModel, tm(from : to, t), -2);
-        plot2d(xModel, apr(:, t), 13); e = gce(); e.children.thickness = 3;
-        plot2d([xModel(length(xModel)), forecastTo], [apr(length(xModel), t), forec(t)], 5); e = gce(); e.children.line_style = 3; e.children.thickness = 3;
-      end
-      
-
-      // ready
-//      tm_steady(steadyIndex, :) = linearForecastValues(xModel, yModel, forecastTo);
-      
-
-      
-//      for t = 1 : count_tmParams
-//        tm_steady(steadyIndex, t) = median(tm(from : to, t)); // old version
-//        yModel = tm(from : to, t);
-//        tm_steady(steadyIndex, t) = forecastValues(xModel, yModel, forecastTo);
+      tm_steady(steadyIndex, :) = linearForecastValues(xModel, yModel, forecastTo)';
         
-//        plot2d(1 : length(reg), tm(:, t), colors(t + 1));
-//        plot2d(xModel, tm(from : to, t), -2);
-//        plot2d([from, to], [tm(from, t), tm(to, t)], [13]); e = gce(); e.children.thickness = 3;
-//        plot2d([to, forecastTo], [tm(to, t), tm_steady_value], [5]); e = gce(); e.children.line_style = 3; e.children.thickness = 3;
+      // old version
+//      for t = 1 : count_tmParams
+//        tm_steady(steadyIndex, t) = median(tm(from : to, t));
 //      end
       //--------------------------------------------------------------------------------------------------------
       arrayNumber_steady(steadyIndex) = arrayNumber;
@@ -312,7 +288,7 @@ for fileIndex = 1 : size(filesArchive, 'r')
       printf("\tpoint #%i: parameter = ''%s'', number = %i\n", i, dt_name(cols_invalid_dt(i)), rows_invalid(i));
     end
     
-    printf("Continue? (1 - yes, 2 - no)\n");
+    printf("Continue with deleting invalid points? (1 - yes, 2 - no)\n");
     key = scanf("%i");
     if key == 1
       // delete rows with invalid point(-s) for getting arrays with only valid points
@@ -335,8 +311,6 @@ for fileIndex = 1 : size(filesArchive, 'r')
   printf("[INFO]: Archive #%i: ""%s"", points quantity = %i\n", fileIndex, filesArchive(fileIndex), steadyIndex);
 end
 
-return; // TODO: don't forget to delete this
-
 count_steadyModes = length(reg_all); // quantity of the all obtained steady modes points
 count_initCharsPnts = length(Ngte_init); // quantity of points in initial characteristics (values in every array)
 
@@ -354,7 +328,7 @@ end
 dtm_apr = approximation(N_all, dtm_all, Ngte_init, polynPow, count_initCharsPnts, count_dtmParams);
 
 //-----------------------------------
-// TODO: calc variance of the normalized steady mode points
+// Calc variance of the normalized steady mode points
 dtm_all_apr = [];
 for j = 1 : count_steadyModes
   for i = 1 : count_dtmParams
@@ -364,7 +338,7 @@ end
 
 dtm_all_dev = dtm_all - dtm_all_apr; // deviation steady mode points from the approximation line
 printf("variance = %f\n", variance(dtm_all_dev));
-return;
+
 //-------------------------------------
 
 printf("[INFO]: Characteristics was defined. Steady mode points quantity: %i\n", count_steadyModes);
@@ -399,7 +373,7 @@ strTitle = currentCalcIdentif + '\nsectorLength = ' + string(sectorLength) + ..
 
 //  Graphics plot
 windowNumber = max(winsid()) + 1;
-for t = 1 : count_dtmParams
+for t = 1 : 8//count_dtmParams
   strImagesTitle = dt_name(t) + ' = f(Ngte)';
   hWin = scf(windowNumber + t); plot2d(N_all, dtm_all(:, t), -9); xgrid; 
   title(strImagesTitle + ',  ' + str_datetime, 'fontsize', 4); // steady mode points

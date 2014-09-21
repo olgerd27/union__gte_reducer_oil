@@ -1,6 +1,24 @@
 // Functions for performing the in-, out- operations
 
 // ======= DATA READING =======
+function [reg_all, dtm_all] = importSteadyPoints(path, fileName)
+//*******************************************************
+// 
+//*******************************************************
+  filePathName = path + '/' + fileName;
+  
+  if ~isfile(filePathName)
+    printf("[ERROR]: cannot read the steady mode points data from the file:\n");
+    printf("\t''%s''\n", filePathName);
+    printf("\tThe reason: this file is not exist or it is not a file\n");
+    abort;
+  end
+
+  data = fscanfMat(filePathName);
+  reg_all = data(:, 1);
+  dtm_all = data(:, 2 : size(data, 'c'));
+endfunction
+
 function resData = getValidData(fileName, initData)
 //***************************************************************************
 // Get a valid data from some archives with an invalid data.                *
@@ -48,7 +66,15 @@ function resParameters = readParametersData(filePath, fileName, fileExt, initPar
 //      about parameters                                                                   *
 // OUT: resParameters - array of result structures of archives with readed parameters data *
 //******************************************************************************************
-  archiveData = fscanfMat(filePath + fileName + fileExt);
+  filePathName = filePath + '/' + fileName + fileExt;
+  if ~isfile(filePathName)
+    printf("[ERROR]: cannot read the data from the archive file:\n");
+    printf("\t''%s''\n", filePathName);
+    printf("\tThe reason: this file is not exist or it is not a file\n");
+    abort;
+  end
+  
+  archiveData = fscanfMat(filePathName);
   archiveData = getValidData(fileName, archiveData);
   count_params = size(initParameters, 1);
   resParameters = initParameters;
@@ -58,6 +84,40 @@ function resParameters = readParametersData(filePath, fileName, fileExt, initPar
 endfunction
 
 // ======= OUT RESULTS =======
+function saveSteadyPoints(path, fileName, reg, dt)
+//*****************************************************
+// Save the steady mode points values to a text file  *
+// IN:  path - path to the file directory             *
+//      fileName - name of the file                   *
+//      reg - regime parameter data for saving        *
+//      dt - 'dt' parameters data for saving          *
+//*****************************************************
+  Ncols = size(dt, 'c');  Nrows = size(dt, 'r');
+  filePathName = path + '/' + fileName;
+  
+  if ~isdir(path)
+    createdir(path);
+  else
+    mdelete(filePathName); // delete file with the same name as a current file
+  end
+  
+  f = mopen(filePathName, 'w');
+  
+  // Write values
+  for i = 1 : Nrows
+    mfprintf(f, "%f ", reg(i));
+    for j = 1 : Ncols
+      mfprintf(f, "%f ", dt(i, j));
+    end
+    mfprintf(f, "\n");
+  end
+  mclose(f);
+  
+  // show info message
+  printf("[INFO]: The steady mode points values was exported to the text file:\n");
+  printf("\t%s\n", filePathName);
+endfunction
+
 function saveResToGraphicFiles(path_imagesOut, calcIdentif, ext_images)
 //*********************************************************************************
 // Save results to a graphics file.                                               *
@@ -69,6 +129,7 @@ function saveResToGraphicFiles(path_imagesOut, calcIdentif, ext_images)
   // go into the common directory (dir for saving all images)
   if(~isdir(path_imagesOut) & ~createdir(path_imagesOut))
     printf("[ERROR]: Cannot create the common dir for saving result images:\n\t%s\n", path_imagesOut);
+    abort;
   end
   // go into the special directory (dir for current calculation)
   path_imagesOut = path_imagesOut + '/' + calcIdentif;
@@ -77,6 +138,7 @@ function saveResToGraphicFiles(path_imagesOut, calcIdentif, ext_images)
   end
   if(~createdir(path_imagesOut))
     printf("[ERROR]: Cannot create the dir for saving result images: %s\n", path_imagesOut);
+    abort;
   end
   
   // save image data
@@ -92,7 +154,7 @@ function saveResToGraphicFiles(path_imagesOut, calcIdentif, ext_images)
   end
 endfunction
 
-function saveResToTextFile(path, fileName, strTitle, powers, ..
+function saveResToTextFile(path, fileName, strTitle, strDateTime, powers, ..
                            Ncols, Nrows, .. 
                            par_regim_data, par_regim_name, par_oil_data, par_oil_names)
 //***************************************************************************************************
@@ -118,7 +180,7 @@ function saveResToTextFile(path, fileName, strTitle, powers, ..
   end
   
   f = mopen(filePathName, 'w');
-  mfprintf(f, strTitle + "powers = ");
+  mfprintf(f, strTitle + strDateTime + "\npowers = ");
   for i = 1 : Ncols
     mfprintf(f, "%i  ", powers(i));
   end

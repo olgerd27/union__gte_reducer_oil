@@ -1,5 +1,140 @@
 // SPECIAL FUNCTIONS
 
+function [reg_all, dtm_all] = calcSteadyPoints()
+//*****************************************************************
+// Function for calculating the steady mode points values         *
+// IN:  all initial data is the global variables                  *
+// OUT: reg_all - the regime parameter steady mode points values  *
+//      dtm_all - the 'dt' parameters steady mode points values   *
+//*****************************************************************
+  // Arrays for storing steady mode points values
+  reg_all = [];
+  dtm_all = [];
+  
+  // MAIN CYCLE
+  for fileIndex = 1 : size(filesArchive, 'r')
+    // Deleting results that was obtained in the previous main cycle iteration
+    clear reg_steady; clear tm_steady; clear dtm_steady; clear arrayNumber_steady;
+  
+    //  READING an archive file
+    params = readParametersData(path_archives, filesArchive(fileIndex), '.' + ext_archive, params);
+
+    // Getting the parameters arrays with reduction to a normal atmospheric condition
+    // This parameters is take out of the if-else, because name of its index variable for the both diagnostic systems is equal
+    reg = params(index_reg).data; // the regime parameter values
+    tm = params(index_tm).data;
+    if diag_sys == 1
+      t0 = mean(params(index_t0).data, 'c');
+      alpha = sqrt(288 ./ (t0 + 273)); // alpha coefficient for reductions parameters to normal atmospheric conditions
+      Gt = params(index_Gt).data;
+      reg = reg * 10.2;  // there are p2 parameter values with conversion its from MPa to kg/cm2
+      n2 = params(index_n2).data .* alpha; // reduction to normal conditions
+    end
+    
+    //  Splitting parameters arrays to sectors with defining the average values and strange
+    steadyIndex = 0;
+    // kk - is the coefficient for correct definition the iterations quantity and correct shifting buffer with length "sectorShift" 
+    //      along the full length of archive
+    kk = ceil(sectorLength / sectorShift);
+    arrSize = length(reg);
+    for j = kk : int(arrSize / sectorShift)
+      from = sectorShift * (j - 1) + 1;
+      to = sectorShift * j;
+      arrayNumber = j * sectorShift;
+      
+      // split arrays, calc strange or average values of parameters and define steady mode
+      isSteadyMode = %F;
+      if diag_sys == 1
+        Gt_strange = strange(Gt(to - sectorLength + 1 : to)); // there are splitting and strange value calculation
+        n2_avrg = median(n2(from : to));
+        Gt_avrg = median(Gt(from : to));
+        isSteadyMode = (Gt_strange <= UGt_strange) & (n2_avrg > Un2_xx) & (Gt_avrg > 0); // define steady mode
+      else
+        reg_strange = strange(reg(to - sectorLength + 1 : to));
+        reg_avrg = median(reg(from : to));
+        isSteadyMode = (reg_strange <= Ungv_strange) & (reg_avrg > Ungv_min); // define steady mode
+      end
+    
+      // Processing the steady modes of GTE's work points values
+      if isSteadyMode
+        steadyIndex = steadyIndex + 1;
+        if diag_sys == 1
+          reg_steady(steadyIndex) = median(reg(from : to));
+        else
+          reg_steady(steadyIndex) = reg_avrg; // already calculated
+        end
+        //--------------------------------------------------------------------------------------------------------
+        // calculate the 'tm' values in steady mode of work
+        forecastTo = to + forecastInterval; // the argument-value for forecasting
+        xModel = [arrayNumber - modelLength + 1 : arrayNumber]';
+        yModel = tm(from : to, :);
+        tm_steady(steadyIndex, :) = linearForecastValues(xModel, yModel, forecastTo)';
+        
+        // old version
+//        for t = 1 : count_tmParams
+//          tm_steady(steadyIndex, t) = median(tm(from : to, t));
+//        end
+        //--------------------------------------------------------------------------------------------------------
+        arrayNumber_steady(steadyIndex) = arrayNumber;
+      end
+    end
+  
+    //  Check if in the current archive doesn't exist the steady mode points
+    if steadyIndex == 0
+      printf("[ERROR]: Steady mode points not found: archive #%i = %s, sectorLength = %i\n", fileIndex, filesArchive(fileIndex), sectorLength);
+      printf("Continue? (1 - yes, 2 - no)\n");
+      key = scanf("%i");
+      if key == 1
+        continue;
+      else
+        scf(1); xgrid; title('Steady mode points not found. ' + params(index_reg).name + ' = f(time)', 'fontsize', 4);
+        plot2d(reg);  e = gce(); e.children.thickness = 2;
+        printf("--------------------------------------------------------------------------------------------------------\n\n");
+        abort;
+      end
+    end
+
+    //  Define temperature drop of oil
+    for t = 1 : count_dtmParams
+      dtm_steady(:, t) = tm_steady(:, t + 1) - tm_steady(:, index_in);
+    end
+
+    // Check existence the "bad", invalid points, that is far from others points
+    ind_invalidValues = find(dtm_steady > Udtm_valid_max | dtm_steady < Udtm_valid_min);
+    count_invalidPoints = length(ind_invalidValues);
+    if count_invalidPoints
+      [cols_invalid_dt, rows_invalid] = calcInvalidValuePos(ind_invalidValues, size(reg_steady, 'r'));
+      rows_invalid_u = unique(rows_invalid);
+      str_archiveNumberName = 'archive #' + string(fileIndex) + ': ' + filesArchive(fileIndex)';
+
+      printf("[ERROR]: There was found %i invalid steady mode point(s) in the %s\n", count_invalidPoints, str_archiveNumberName);
+      for i = 1 : count_invalidPoints
+        printf("\tpoint #%i: parameter = ''%s'', number = %i\n", i, dt_name(cols_invalid_dt(i)), rows_invalid(i));
+      end
+      
+      printf("Continue with deleting invalid points? (1 - yes, 2 - no)\n");
+      key = scanf("%i");
+      if key == 1
+        // delete rows with invalid point(-s) for getting arrays with only valid points
+        reg_steady(rows_invalid_u, :) = [];
+        dtm_steady(rows_invalid_u, :) = [];
+      else
+        plotInvalidArchive( reg, tm, reg_steady, tm_steady, arrayNumber_steady, ..
+                            cols_invalid_dt, rows_invalid, rows_invalid_u, ..
+                            index_in, params(index_reg).name, t_name, ..
+                            str_archiveNumberName, colors );
+        printf("--------------------------------------------------------------------------------------------------------\n\n");
+        abort;
+      end
+    end
+
+    // Save the values of the steady mode points over all archives for further processing out of the main cycle
+    reg_all = [reg_all; reg_steady];
+    dtm_all = [dtm_all; dtm_steady];
+    printf("[INFO]: Archive #%i: ""%s"", points quantity = %i\n", fileIndex, filesArchive(fileIndex), steadyIndex);
+  end
+endfunction
+
 function forc_y = linearForecastValues(xArr, yArr, forc_x)
 //**********************************************************************************************
 // Calculation the forecast value Y for given model and argument value X (linear forecasting)  *
@@ -95,7 +230,7 @@ function plotInvalidArchive( reg, tm, reg_steady, tm_steady, arrayNumber_steady,
   type_validPoints = -3; // type of the marker for plotting the valid points
   type_invalidPoints = -9; // type of the marker for plotting the invalid points
   legend_str = [];
-  cols_invalid_t = cols_invalid_dt + 1; // conversion columns number from 'dtm' parameter to 'tm'
+  cols_invalid_t = cols_invalid_dt + 1; // conversion columns number from 'dt' parameter to 'tm'
   cols_invalid_t_u = unique(cols_invalid_t); // numbers of the parameters with invalid steady mode points
   count_invalidParams = length(cols_invalid_t_u); // quantity of the parameters with invalid steady mode points
 

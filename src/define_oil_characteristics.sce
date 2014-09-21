@@ -15,23 +15,26 @@ board = 2;                // Board: 1 - right, 2 - left
 sectorLength = 900;       // Length of splitting sectors
 sectorShift = 300;        // Shift of sector with length sectorLength in every main cycle iteration
 modelLength = 300;        // Length of the data model for performing of the forecasting temperature parameters on steady modes
+forecastInterval = 100;   // Interval for the forecasting temperature parameters on steady modes
 
-if diag_sys == 1
-  UGt_strange = 10;       // Settings Gt strange for defining the steady modes of GTE's work
-  Un2_xx = 5500;          // Settings XX by n2 parameter for defining the steady modes of GTE's work
-  forecastInterval = 100; // Interval for the forecasting temperature parameters on steady modes
-else
-  Ungv_strange = 5;       // Settings ngv strange for defining the steady modes of reducer's work
-  Ungv_min = 40;          // Settings ngv min value for defining the steady modes of reducer's work
-  forecastInterval = 200; // Interval for the forecasting temperature parameters on steady modes
+importSteady = 0;         // Import calculated steady mode points to the text file: 1 - perform, 0 - don't perform
+if importSteady == 0
+  if diag_sys == 1
+    UGt_strange = 10;     // Settings Gt strange for defining the steady modes of GTE's work
+    Un2_xx = 5500;        // Settings XX by n2 parameter for defining the steady modes of GTE's work
+  else
+    Ungv_strange = 5;     // Settings ngv strange for defining the steady modes of reducer's work
+    Ungv_min = 40;        // Settings ngv min value for defining the steady modes of reducer's work
 
-  Nnom = 20020;           // the reducer power on the nominal reducer's work mode
-  ngv_nom = 240;          // rotation speed of the reducer outlet shaft on the nominal reducer's work mode
+    Nnom = 20020;         // The reducer power on the nominal reducer's work mode
+    ngv_nom = 240;        // Rotation speed of the reducer outlet shaft on the nominal reducer's work mode
+  end
+
+  Udtm_valid_min = 0;     // Settings dtm min value for defining the invalid points
+  Udtm_valid_max = 80;    // Settings dtm max value for defining the invalid points
 end
 
-Udtm_valid_min = 0;       // Settings dtm min value for defining the invalid points
-Udtm_valid_max = 80;      // Settings dtm max value for defining the invalid points
-
+exportSteadyPoints  = 1;  // Export steady mode points in the text file: 1 - perform, 0 - don't perform
 exportResToTxtFile  = 0;  // Export the oil's characteristics points values in a text file:  1 - perform, 0 - don't perform
 exportResToImgFiles = 0;  // Export plotted the oil's characters points values in a graphics files with "png" extension:
                           // 1 - perform, 0 - don't perform
@@ -92,16 +95,18 @@ else
   polynPow(index_tz11b - index_in) = 1; // dtz11b
 end
 
-// Setting archives path, names and extension
-filesArchive = [// 1 etap PI
-                'mo_2013_1_3_23_0_0';   'mo_2013_1_3_9_52_48';  'mo_2013_1_4_9_34_5'; 'mo_2013_1_5_9_27_47';
-                'mo_2013_1_8_11_10_49'; 'mo_2013_1_8_16_25_21';
-                // 2 etap PI + PSI
-                'mo_2013_2_14_10_1_0';  'mo_2013_2_25_13_24_20';  'mo_2013_2_25_18_44_48'; 'mo_2013_2_25_9_58_3';
-                'mo_2013_2_26_9_28_29'; 'mo_2013_3_11_12_48_00'];
+if importSteady == 0
+  // Setting archives path, names and extension
+  filesArchive = [// 1 etap PI
+                  'mo_2013_1_3_23_0_0';   'mo_2013_1_3_9_52_48';  'mo_2013_1_4_9_34_5'; 'mo_2013_1_5_9_27_47';
+                  'mo_2013_1_8_11_10_49'; 'mo_2013_1_8_16_25_21';
+                  // 2 etap PI + PSI
+                  'mo_2013_2_14_10_1_0';  'mo_2013_2_25_13_24_20';  'mo_2013_2_25_18_44_48'; 'mo_2013_2_25_9_58_3';
+                  'mo_2013_2_26_9_28_29'; 'mo_2013_3_11_12_48_00'];
 
-//path_archives = "/media/oleg/users/Oleg/work_zm/export/GTA_M56/Archivs/sheep2/sheep2_bort2/bort_2-all";
-path_archives = "D:\work\GTA_M56\Archivs\sheep_2\bort_2-left_all";
+  path_archives = "/media/oleg/users/Oleg/work_zm/export/GTA_M56/Archivs/sheep2/sheep2_bort2/bort_2-all";
+  //path_archives = "D:\work\GTA_M56\Archivs\sheep_2\bort_2-left_all";
+end
 
 // Names of oil's temperatures
 if diag_sys == 1
@@ -126,13 +131,13 @@ else
 end
 
 // Paths for results saving
-//path_res = "~/Programming/scilab/projects/union__gte_reducer_oil/out";
-path_res = "D:\work\GTA_M56\documentation_preparing\programm_methods_initial_data\apps\union__gte_reducer_oil\out";
+path_res = "~/Programming/scilab/projects/union__gte_reducer_oil/out";
+//path_res = "D:\work\GTA_M56\documentation_preparing\programm_methods_initial_data\apps\union__gte_reducer_oil\out";
 //=============================================================================================================================
 
 // LOADING additional files with functions
-//path_sourceFiles = "~/Programming/scilab/projects/union__gte_reducer_oil/src";
-path_sourceFiles = "D:\work\GTA_M56\documentation_preparing\programm_methods_initial_data\apps\union__gte_reducer_oil\src";
+path_sourceFiles = "~/Programming/scilab/projects/union__gte_reducer_oil/src";
+//path_sourceFiles = "D:\work\GTA_M56\documentation_preparing\programm_methods_initial_data\apps\union__gte_reducer_oil\src";
 names_sourceFiles = [
                     "add_functions.sci";
                     "in_out_functions.sci";
@@ -169,10 +174,6 @@ for i = 1 : count_dtmParams
 end
 ext_archive = 'txt'; // archives files extention
 
-// Arrays for storing steady mode points values
-reg_all = [];
-dtm_all = [];
-
 // Structure for storing parameters data, readed from an archive file
 if diag_sys == 1
   index_t0 = 1;  index_Gt = 2;  index_reg = 3;  index_n2 = 4;  index_tm = 5; // parameters indexes
@@ -186,129 +187,44 @@ else
   params(index_reg) = struct('name', 'ngv', 'archIndexStart', 14, 'archIndexEnd', 14, 'data', []);
   params(index_tm) = struct('name', t_name, 'archIndexStart', 53, 'archIndexEnd', 80, 'data', []);
 end
+
 colors = [1, 2, 3, 5, 19, 16, 27, 22, 13, 6, 9, 32, 28, 21, 25, 23, 26, 17];
+
+// INITIAL DATA FOR EXPORT
+// Relative path's for saving results. 
+// Structure of the results tree directories is constant and therefore this paths variables moved from a Initial data block at here
+path_resGTERltv = "gte"; // relative path for saving the GTE's results characteristics
+path_resReducerRltv = "reducer"; // relative path for saving the reducer's results characteristics
+path_steadyRltv = "steady_modes"; // relative path for saving the steady mode points values
+path_resTxtRltv = "txt"; // relative path for saving the text result
+path_resImageRltv = "images"; // relative path for saving the images
+// Define the result relative path in accordance with type of current PKSTD diagnostics system
+if diag_sys == 1
+  path_resDiagSysRltv = path_resGTERltv;
+else
+  path_resDiagSysRltv = path_resReducerRltv;
+end
+// Results paths
+path_steady = path_res + '/' + path_resDiagSysRltv + '/' + path_steadyRltv; // the steady modes points absolute path
+path_resTxt = path_res + '/' + path_resDiagSysRltv + '/' + path_resTxtRltv; // the text results absolute path
+path_resImage = path_res + '/' + path_resDiagSysRltv + '/' + path_resImageRltv; // the graphic results absolute path
+// Results files extensions
+ext_steady = 'dat';
+ext_out_images = 'png';
+ext_out_txt = 'rez';
+// Identification current calculation: [sheep]_[board]_[sectorLength]_[sectorShift]_[modelLength]_[forecastInterval]
+str_currCalcIdentif = 's=' + string(sheep) + '_b=' + string(board) + '_sl=' + string(sectorLength) + ..
+  '_ss=' + string(sectorShift) + '_ml=' + string(modelLength) + '_fi=' + string(forecastInterval);
+
+steadyFileName = str_currCalcIdentif + '.' + ext_steady; // the steady mode points full file name
+resTxtFileName = str_currCalcIdentif + '.' + ext_out_txt; // the text results file name full file name
 //=============================================================================================================================
 
-// MAIN CYCLE
-for fileIndex = 1 : size(filesArchive, 'r')
-  // Deleting results that was obtained in the previous main cycle iteration
-  clear reg_steady; clear tm_steady; clear dtm_steady; clear arrayNumber_steady;
-  
-  //  READING an archive file
-  params = readParametersData(path_archives + '/', filesArchive(fileIndex), '.' + ext_archive, params);
-
-  // Getting the parameters arrays with reduction to a normal atmospheric condition
-  // This parameters is take out of the if-else, because name of its index variable for the both diagnostic systems is equal
-  reg = params(index_reg).data; // the regime parameter values
-  tm = params(index_tm).data;
-  if diag_sys == 1
-    t0 = mean(params(index_t0).data, 'c');
-    alpha = sqrt(288 ./ (t0 + 273)); // alpha coefficient for reductions parameters to normal atmospheric conditions
-    Gt = params(index_Gt).data;
-    reg = reg * 10.2;  // there are p2 parameter values with conversion its from MPa to kg/cm2
-    n2 = params(index_n2).data .* alpha; // reduction to normal conditions
-  end
-
-  //  Splitting parameters arrays to sectors with defining the average values and strange
-  steadyIndex = 0;
-  kk = ceil(sectorLength / sectorShift); // the coefficient for correct definition the iterations quantity and correct shifting buffer with length "sectorShift" along the full length of archive
-  arrSize = length(reg);
-  for j = kk : int(arrSize / sectorShift)
-    from = sectorShift * (j - 1) + 1;
-    to = sectorShift * j;
-    arrayNumber = j * sectorShift;
-
-    // split arrays, calc strange or average values of parameters and define steady mode
-    isSteadyMode = %F;
-    if diag_sys == 1
-      Gt_strange = strange(Gt(to - sectorLength + 1 : to)); // there are splitting and strange value calculation
-      n2_avrg = median(n2(from : to));
-      Gt_avrg = median(Gt(from : to));
-      isSteadyMode = (Gt_strange <= UGt_strange) & (n2_avrg > Un2_xx) & (Gt_avrg > 0); // define steady mode
-    else
-      reg_strange = strange(reg(to - sectorLength + 1 : to));
-      reg_avrg = median(reg(from : to));
-      isSteadyMode = (reg_strange <= Ungv_strange) & (reg_avrg > Ungv_min); // define steady mode
-    end
-
-    // Processing the steady modes of GTE's work points values
-    if isSteadyMode
-      steadyIndex = steadyIndex + 1;
-      if diag_sys == 1
-        reg_steady(steadyIndex) = median(reg(from : to));
-      else
-        reg_steady(steadyIndex) = reg_avrg; // already calculated
-      end
-      //--------------------------------------------------------------------------------------------------------
-      // calculate the 'tm' values in steady mode of work
-      forecastTo = to + forecastInterval; // the argument-value for forecasting
-      xModel = [arrayNumber - modelLength + 1 : arrayNumber]';
-      yModel = tm(from : to, :);
-      tm_steady(steadyIndex, :) = linearForecastValues(xModel, yModel, forecastTo)';
-        
-      // old version
-//      for t = 1 : count_tmParams
-//        tm_steady(steadyIndex, t) = median(tm(from : to, t));
-//      end
-      //--------------------------------------------------------------------------------------------------------
-      arrayNumber_steady(steadyIndex) = arrayNumber;
-    end
-  end
-  
-  //  Check if in the current archive doesn't exist the steady mode points
-  if steadyIndex == 0
-    printf("[ERROR]: Steady mode points not found: archive #%i = %s, sectorLength = %i\n", fileIndex, filesArchive(fileIndex), sectorLength);
-    printf("Continue? (1 - yes, 2 - no)\n");
-    key = scanf("%i");
-    if key == 1
-      continue;
-    else
-      scf(1); xgrid; title('Steady mode points not found. ' + params(index_reg).name + ' = f(time)', 'fontsize', 4);
-      plot2d(reg);  e = gce(); e.children.thickness = 2;
-      printf("--------------------------------------------------------------------------------------------------------\n\n");
-      return;
-    end
-  end
-
-  //  Define temperature drop of oil
-  for t = 1 : count_dtmParams
-    dtm_steady(:, t) = tm_steady(:, t + 1) - tm_steady(:, index_in);
-  end
-
-  // Check existence the "bad", invalid points, that is far from others points
-  ind_invalidValues = find(dtm_steady > Udtm_valid_max | dtm_steady < Udtm_valid_min);
-  count_invalidPoints = length(ind_invalidValues);
-  if count_invalidPoints
-    [cols_invalid_dt, rows_invalid] = calcInvalidValuePos(ind_invalidValues, size(reg_steady, 'r'));
-    rows_invalid_u = unique(rows_invalid);
-    str_archiveNumberName = 'archive #' + string(fileIndex) + ': ' + filesArchive(fileIndex)';
-
-    printf("[ERROR]: There was found %i invalid steady mode point(s) in the %s\n", count_invalidPoints, str_archiveNumberName);
-    for i = 1 : count_invalidPoints
-      printf("\tpoint #%i: parameter = ''%s'', number = %i\n", i, dt_name(cols_invalid_dt(i)), rows_invalid(i));
-    end
-    
-    printf("Continue with deleting invalid points? (1 - yes, 2 - no)\n");
-    key = scanf("%i");
-    if key == 1
-      // delete rows with invalid point(-s) for getting arrays with only valid points
-      reg_steady(rows_invalid_u, :) = [];
-      dtm_steady(rows_invalid_u, :) = [];
-    else
-      plotInvalidArchive( reg, tm, reg_steady, tm_steady, arrayNumber_steady, ..
-                          cols_invalid_dt, rows_invalid, rows_invalid_u, ..
-                          index_in, params(index_reg).name, t_name, ..
-                          str_archiveNumberName, colors );
-      printf("--------------------------------------------------------------------------------------------------------\n\n");
-      return;
-    end
-  end
-
-  // Save the values of the steady mode points over all archives for further processing out of the main cycle
-  reg_all = [reg_all; reg_steady];
-  dtm_all = [dtm_all; dtm_steady];
-    
-  printf("[INFO]: Archive #%i: ""%s"", points quantity = %i\n", fileIndex, filesArchive(fileIndex), steadyIndex);
+// CALCULATIONS
+if importSteady == 1
+  [reg_all, dtm_all] = importSteadyPoints(path_steady, steadyFileName);
+else
+  [reg_all, dtm_all] = calcSteadyPoints();
 end
 
 count_steadyModes = length(reg_all); // quantity of the all obtained steady modes points
@@ -322,10 +238,10 @@ else
 end
 
 //  Sort Ngte parameters array values in growing order and corresponding interchange of placements values of the "dtm" parameter arrays
-[N_all, dtm_all] = sortByX(N_all, dtm_all);
+[N_all, dtm_all_sort] = sortByX(N_all, dtm_all);
 
 //  Steady mode points approximation for obtaining the results characteristics
-dtm_apr = approximation(N_all, dtm_all, Ngte_init, polynPow, count_initCharsPnts, count_dtmParams);
+dtm_apr = approximation(N_all, dtm_all_sort, Ngte_init, polynPow, count_initCharsPnts, count_dtmParams);
 
 //-----------------------------------
 // Calc variance of the normalized steady mode points
@@ -336,46 +252,22 @@ for j = 1 : count_steadyModes
   end
 end
 
-dtm_all_dev = dtm_all - dtm_all_apr; // deviation steady mode points from the approximation line
+dtm_all_dev = dtm_all_sort - dtm_all_apr; // deviation steady mode points from the approximation line
 printf("variance = %f\n", variance(dtm_all_dev));
 
 //-------------------------------------
-
 printf("[INFO]: Characteristics was defined. Steady mode points quantity: %i\n", count_steadyModes);
 //=============================================================================================================================
 
 //      SHOW RESULTS
-// CONSTANT INITIAL DATA
-// Relative path's for saving results. 
-// Structure of the results tree directories is constant and therefore this paths variables moved from a Initial data block at here
-path_resGTERltv = "gte"; // relative path for saving the GTE's results characteristics
-path_resReducerRltv = "reducer"; // relative path for saving the reducer's results characteristics
-path_resTxtRltv = "txt"; // relative path for saving the text result
-path_resImageRltv = "images"; // relative path for saving the images
-// Results files exensions
-ext_images = 'png';
-ext_txt = 'rez';
-// Identification current calculation - sheep+board
-currentCalcIdentif = 'sheep' + string(sheep) + '_board' + string(board);
-
-// Define the result relative path in accordance with type of current PKSTD diagnostics system
-if diag_sys == 1
-  path_resDiagSysRltv = path_resGTERltv;
-else
-  path_resDiagSysRltv = path_resReducerRltv;
-end
-
 //  Show results processing
 str_datetime = getDateTimeString();
-strTitle = currentCalcIdentif + '\nsectorLength = ' + string(sectorLength) + ..
-           ', sectorShift = ' + string(sectorShift) + '\ndate_time = ' + str_datetime + '\n';
-//printf("\n%s\n", strTitle);
 
 //  Graphics plot
 windowNumber = max(winsid()) + 1;
-for t = 1 : 8//count_dtmParams
+for t = 1 : count_dtmParams
   strImagesTitle = dt_name(t) + ' = f(Ngte)';
-  hWin = scf(windowNumber + t); plot2d(N_all, dtm_all(:, t), -9); xgrid; 
+  hWin = scf(windowNumber + t); plot2d(N_all, dtm_all_sort(:, t), -9); xgrid; 
   title(strImagesTitle + ',  ' + str_datetime, 'fontsize', 4); // steady mode points
   hWin.figure_name = strImagesTitle;
 
@@ -386,17 +278,20 @@ for t = 1 : 8//count_dtmParams
 end
 
 //    SAVE RESULTS
+// Export steady mode points in a text file
+if exportSteadyPoints == 1
+  saveSteadyPoints(path_steady, steadyFileName, reg_all, dtm_all);
+end
+
 // Export results plots in graphics files
 if exportResToImgFiles == 1
-  saveResToGraphicFiles(path_res + '/' + path_resDiagSysRltv + '/' + path_resImageRltv, ..
-                        currentCalcIdentif, ext_images);
+  saveResToGraphicFiles(path_resImage, str_currCalcIdentif, ext_out_images);
 end
 
 //  Save results in a text file
-if exportResToTxtFile == 1
-  saveResToTextFile(path_res + '/' + path_resDiagSysRltv + '/' + path_resTxtRltv, ..
-                    currentCalcIdentif + '.' + ext_txt, strTitle, polynPow, ..
-                    count_dtmParams, count_initCharsPnts, ..
+if (exportResToTxtFile == 1) & (importSteady == 0)
+  saveResToTextFile(path_resTxt, resTxtFileName, str_currCalcIdentif, str_datetime, ..
+                    polynPow, count_dtmParams, count_initCharsPnts, ..
                     Ngte_init, 'Ngte', dtm_apr, dt_name);
 end
 

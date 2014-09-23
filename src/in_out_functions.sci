@@ -180,7 +180,9 @@ function saveResToTextFile(path, fileName, strTitle, strDateTime, powers, ..
   end
   
   f = mopen(filePathName, 'w');
-  mfprintf(f, strTitle + strDateTime + "\npowers = ");
+  mfprintf(f, "The results information:  %s\n", strTitle);
+  mfprintf(f, "Date_time:  %s\n", strDateTime);
+  mfprintf(f, "The polynomial powers: ");
   for i = 1 : Ncols
     mfprintf(f, "%i  ", powers(i));
   end

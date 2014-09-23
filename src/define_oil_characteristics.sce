@@ -8,7 +8,7 @@ printf("* START application *\n");
 printf("*********************\n");
 
 //  INITIAL DATA
-diag_sys = 1;             // PKSTD diagnostics system: 1 - GTE oil's system, 2 - reducer oil's system
+diag_sys = 2;             // PKSTD diagnostics system: 1 - GTE oil's system, 2 - reducer oil's system
 sheep = 2;                // Sheep number
 board = 2;                // Board: 1 - right, 2 - left
 
@@ -17,7 +17,7 @@ sectorShift = 300;        // Shift of sector with length sectorLength in every m
 modelLength = 300;        // Length of the data model for performing of the forecasting temperature parameters on steady modes
 forecastInterval = 100;   // Interval for the forecasting temperature parameters on steady modes
 
-importSteady = 0;         // Import calculated steady mode points to the text file: 1 - perform, 0 - don't perform
+importSteady = 1;         // Import calculated steady mode points to the text file: 1 - perform, 0 - don't perform
 if importSteady == 0
   if diag_sys == 1
     UGt_strange = 10;     // Settings Gt strange for defining the steady modes of GTE's work
@@ -25,15 +25,18 @@ if importSteady == 0
   else
     Ungv_strange = 5;     // Settings ngv strange for defining the steady modes of reducer's work
     Ungv_min = 40;        // Settings ngv min value for defining the steady modes of reducer's work
-
-    Nnom = 20020;         // The reducer power on the nominal reducer's work mode
-    ngv_nom = 240;        // Rotation speed of the reducer outlet shaft on the nominal reducer's work mode
   end
 
   Udtm_valid_min = 0;     // Settings dtm min value for defining the invalid points
   Udtm_valid_max = 80;    // Settings dtm max value for defining the invalid points
 end
 
+if diag_sys == 2
+  Nnom = 20020;           // The reducer power on the nominal reducer's work mode
+  ngv_nom = 240;          // Rotation speed of the reducer outlet shaft on the nominal reducer's work mode
+end
+
+plotGraphs = 1;           // Graphs plot: 1 - perform, 0 - don't perform
 exportSteadyPoints  = 1;  // Export steady mode points in the text file: 1 - perform, 0 - don't perform
 exportResToTxtFile  = 0;  // Export the oil's characteristics points values in a text file:  1 - perform, 0 - don't perform
 exportResToImgFiles = 0;  // Export plotted the oil's characters points values in a graphics files with "png" extension:
@@ -41,7 +44,7 @@ exportResToImgFiles = 0;  // Export plotted the oil's characters points values i
 
 // The initial characteristics Ngte = f(p2) from a set of thermodynamics characteristics
 p2_init = [1.795; 2.251; 2.702; 3.380; 4.147; 5.111; 6.322; 7.049; 7.775; 8.408;
-            9.152; 9.836; 10.601; 12.189; 13.692; 15.132; 16.397; 17.560; 18.671; 19.782];
+           9.152; 9.836; 10.601; 12.189; 13.692; 15.132; 16.397; 17.560; 18.671; 19.782];
 Ngte_init = [110.4; 273.4; 434.4; 676.5; 950.2; 1294.5; 2052.5; 2643.4; 3234.2; 3749.1;
              4353.8; 5098.5; 5958.6; 7823; 9869.7; 11981; 14013.4; 16015.3; 18017.2; 20019.1];
 
@@ -104,8 +107,8 @@ if importSteady == 0
                   'mo_2013_2_14_10_1_0';  'mo_2013_2_25_13_24_20';  'mo_2013_2_25_18_44_48'; 'mo_2013_2_25_9_58_3';
                   'mo_2013_2_26_9_28_29'; 'mo_2013_3_11_12_48_00'];
 
-  path_archives = "/media/oleg/users/Oleg/work_zm/export/GTA_M56/Archivs/sheep2/sheep2_bort2/bort_2-all";
-  //path_archives = "D:\work\GTA_M56\Archivs\sheep_2\bort_2-left_all";
+  //path_archives = "/media/oleg/users/Oleg/work_zm/export/GTA_M56/Archivs/sheep2/sheep2_bort2/bort_2-all";
+  path_archives = "D:\work\GTA_M56\Archivs\sheep_2\bort_2-left_all";
 end
 
 // Names of oil's temperatures
@@ -131,13 +134,13 @@ else
 end
 
 // Paths for results saving
-path_res = "~/Programming/scilab/projects/union__gte_reducer_oil/out";
-//path_res = "D:\work\GTA_M56\documentation_preparing\programm_methods_initial_data\apps\union__gte_reducer_oil\out";
+//path_res = "~/Programming/scilab/projects/union__gte_reducer_oil/out";
+path_res = "D:\work\GTA_M56\documentation_preparing\programm_methods_initial_data\apps\union__gte_reducer_oil\out";
 //=============================================================================================================================
 
 // LOADING additional files with functions
-path_sourceFiles = "~/Programming/scilab/projects/union__gte_reducer_oil/src";
-//path_sourceFiles = "D:\work\GTA_M56\documentation_preparing\programm_methods_initial_data\apps\union__gte_reducer_oil\src";
+//path_sourceFiles = "~/Programming/scilab/projects/union__gte_reducer_oil/src";
+path_sourceFiles = "D:\work\GTA_M56\documentation_preparing\programm_methods_initial_data\apps\union__gte_reducer_oil\src";
 names_sourceFiles = [
                     "add_functions.sci";
                     "in_out_functions.sci";
@@ -264,17 +267,19 @@ printf("[INFO]: Characteristics was defined. Steady mode points quantity: %i\n",
 str_datetime = getDateTimeString();
 
 //  Graphics plot
-windowNumber = max(winsid()) + 1;
-for t = 1 : count_dtmParams
-  strImagesTitle = dt_name(t) + ' = f(Ngte)';
-  hWin = scf(windowNumber + t); plot2d(N_all, dtm_all_sort(:, t), -9); xgrid; 
-  title(strImagesTitle + ',  ' + str_datetime, 'fontsize', 4); // steady mode points
-  hWin.figure_name = strImagesTitle;
+if plotGraphs == 1
+  windowNumber = max(winsid()) + 1;
+  for t = 1 : count_dtmParams
+    strImagesTitle = dt_name(t) + ' = f(Ngte)';
+    hWin = scf(windowNumber + t); plot2d(N_all, dtm_all_sort(:, t), -9); xgrid; 
+    title(strImagesTitle + ',  ' + str_datetime, 'fontsize', 4); // steady mode points
+    hWin.figure_name = strImagesTitle;
 
-  //  Plot the approximate line
-  plot2d(Ngte_init, dtm_apr(:, t), 15); e = gce(); e.children.thickness = 2;
-  // Plot the approximate lines points
-  plot2d(Ngte_init, dtm_apr(:, t), -14);
+    //  Plot the approximate line
+    plot2d(Ngte_init, dtm_apr(:, t), 15); e = gce(); e.children.thickness = 2;
+    // Plot the approximate lines points
+    plot2d(Ngte_init, dtm_apr(:, t), -14);
+  end
 end
 
 //    SAVE RESULTS

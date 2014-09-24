@@ -198,6 +198,56 @@ function [invalidCols, invalidRows] = calcInvalidValuePos(indexes, count_rows)
   end
 endfunction
 
+// GRAPHS PLOT
+function plotResults(x_points, y_points, x_polyn, y_polyn, ..
+                      count_pars, plotInSameWin, x_names, y_name, strDateTime)
+//************************************************************
+// 
+//************************************************************
+  // define the size of graphs square matrix
+  if plotInSameWin
+    size_graphsSquareMatrix = 2;
+  else
+    size_graphsSquareMatrix = 1;
+  end
+  graphsOnWin = size_graphsSquareMatrix * size_graphsSquareMatrix;
+  
+  // plotting
+  str_y_name = ' = f(' + y_name + ')';
+  oneWin_parNames = '';    sep_win_par_names = ', ';
+  number_winFirst = max(winsid()) + 1;
+  it_par = 1;   // iterator of plotted parameters
+  it_win = 1;   // iterator of plot windows
+  it_graph = 1; // iterator of the graphs on a one plot window
+  while (it_par <= count_pars)
+    strTitle = x_names(it_par) + str_y_name;
+    oneWin_parNames = oneWin_parNames + x_names(it_par) + sep_win_par_names; // for the windows names
+    hWin = scf(number_winFirst + it_win); 
+    subplot(size_graphsSquareMatrix, size_graphsSquareMatrix, it_graph);
+    plot2d(x_points, y_points(:, it_par), -9); xgrid;
+    title(strTitle + ',  ' + strDateTime, 'fontsize', 4);
+
+    //  Plot the approximate line
+    plot2d(x_polyn, y_polyn(:, it_par), 15); e = gce(); e.children.thickness = 2;
+    // Plot the approximate lines points
+    plot2d(x_polyn, y_polyn(:, it_par), -14);
+
+    if (it_graph == graphsOnWin) | (it_par == count_pars)
+      // forming the windows names
+      oneWin_parNames = part(oneWin_parNames, [1 : length(oneWin_parNames) - length(sep_win_par_names)]);
+      hWin.figure_name = '[' + oneWin_parNames + ']' + str_y_name;
+      oneWin_parNames = '';
+      
+      // increase the iterators values
+      it_win = it_win + 1;
+      it_graph = 1;
+    else
+      it_graph = it_graph + 1;
+    end
+    it_par = it_par + 1;
+  end
+endfunction
+
 function plotInvalidArchive( reg, tm, reg_steady, tm_steady, arrayNumber_steady, ..
                              cols_invalid_dt, rows_invalid, rows_invalid_u, ..
                              index_in, reg_name, t_name, ..

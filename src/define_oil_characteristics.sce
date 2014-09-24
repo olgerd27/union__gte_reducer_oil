@@ -17,8 +17,8 @@ sectorShift = 300;        // Shift of sector with length sectorLength in every m
 modelLength = 300;        // Length of the data model for performing of the forecasting temperature parameters on steady modes
 forecastInterval = 100;   // Interval for the forecasting temperature parameters on steady modes
 
-importSteady = 1;         // Import calculated steady mode points to the text file: 1 - perform, 0 - don't perform
-if importSteady == 0
+importSteady = %T;        // Import calculated steady mode points to the text file: %T - perform, %F - don't perform
+if ~importSteady
   if diag_sys == 1
     UGt_strange = 10;     // Settings Gt strange for defining the steady modes of GTE's work
     Un2_xx = 5500;        // Settings XX by n2 parameter for defining the steady modes of GTE's work
@@ -36,11 +36,13 @@ if diag_sys == 2
   ngv_nom = 240;          // Rotation speed of the reducer outlet shaft on the nominal reducer's work mode
 end
 
-plotGraphs = 1;           // Graphs plot: 1 - perform, 0 - don't perform
-exportSteadyPoints  = 1;  // Export steady mode points in the text file: 1 - perform, 0 - don't perform
-exportResToTxtFile  = 0;  // Export the oil's characteristics points values in a text file:  1 - perform, 0 - don't perform
-exportResToImgFiles = 0;  // Export plotted the oil's characters points values in a graphics files with "png" extension:
-                          // 1 - perform, 0 - don't perform
+plotGraphs = %T;          // Graphs plot: %T - perform, %F - don't perform
+plotGraphsSameWin = %T;   // Plot graphs, some quantity of that is placed on a same window: %T - perform, %F - don't perform
+
+exportSteadyPoints  = %T; // Export steady mode points in the text file: %T - perform, %F - don't perform
+exportResToTxtFile  = %F; // Export the oil's characteristics points values in a text file:  %T - perform, %F - don't perform
+exportResToImgFiles = %F; // Export plotted the oil's characters points values in a graphics files with "png" extension:
+                          // %T - perform, %F - don't perform
 
 // The initial characteristics Ngte = f(p2) from a set of thermodynamics characteristics
 p2_init = [1.795; 2.251; 2.702; 3.380; 4.147; 5.111; 6.322; 7.049; 7.775; 8.408;
@@ -98,7 +100,7 @@ else
   polynPow(index_tz11b - index_in) = 1; // dtz11b
 end
 
-if importSteady == 0
+if ~importSteady
   // Setting archives path, names and extension
   filesArchive = [// 1 etap PI
                   'mo_2013_1_3_23_0_0';   'mo_2013_1_3_9_52_48';  'mo_2013_1_4_9_34_5'; 'mo_2013_1_5_9_27_47';
@@ -113,24 +115,24 @@ end
 
 // Names of oil's temperatures
 if diag_sys == 1
-  t_name(index_in) = 'tm_gte_in';  t_name(index_per) = 'tm_per';
-  t_name(index_tkvd) = 'tm_tkvd';  t_name(index_tnd) = 'tm_tnd';
-  t_name(index_tv) = 'tm_tv';      t_name(index_out) = 'tm_gte_out';
+  t_names(index_in) = 'tm_gte_in';  t_names(index_per) = 'tm_per';
+  t_names(index_tkvd) = 'tm_tkvd';  t_names(index_tnd) = 'tm_tnd';
+  t_names(index_tv) = 'tm_tv';      t_names(index_out) = 'tm_gte_out';
 else
-  t_name(index_in) = 'tm_red_in';  t_name(index_out) = 'tm_red_out';
-  t_name(index_tz01a) = 'tz01a';   t_name(index_tz01b) = 'tz01b';
-  t_name(index_tz02a) = 'tz02a';   t_name(index_tz02b) = 'tz02b';
-  t_name(index_tz02c) = 'tz02c';   t_name(index_tz02d) = 'tz02d';
-  t_name(index_tz03a) = 'tz03a';   t_name(index_tz03b) = 'tz03b';
-  t_name(index_tz03c) = 'tz03c';   t_name(index_tz03d) = 'tz03d';
-  t_name(index_tz04a) = 'tz04a';   t_name(index_tz04b) = 'tz04b';
-  t_name(index_tz05a) = 'tz05a';   t_name(index_tz05b) = 'tz05b';
-  t_name(index_tz06a) = 'tz06a';   t_name(index_tz06b) = 'tz06b';
-  t_name(index_tz07a) = 'tz07a';   t_name(index_tz07b) = 'tz07b';
-  t_name(index_tz08a) = 'tz08a';   t_name(index_tz08b) = 'tz08b';
-  t_name(index_tz09a) = 'tz09a';   t_name(index_tz09b) = 'tz09b';
-  t_name(index_tz10a) = 'tz10a';   t_name(index_tz10b) = 'tz10b';
-  t_name(index_tz11a) = 'tz11a';   t_name(index_tz11b) = 'tz11b';
+  t_names(index_in) = 'tm_red_in';  t_names(index_out) = 'tm_red_out';
+  t_names(index_tz01a) = 'tz01a';   t_names(index_tz01b) = 'tz01b';
+  t_names(index_tz02a) = 'tz02a';   t_names(index_tz02b) = 'tz02b';
+  t_names(index_tz02c) = 'tz02c';   t_names(index_tz02d) = 'tz02d';
+  t_names(index_tz03a) = 'tz03a';   t_names(index_tz03b) = 'tz03b';
+  t_names(index_tz03c) = 'tz03c';   t_names(index_tz03d) = 'tz03d';
+  t_names(index_tz04a) = 'tz04a';   t_names(index_tz04b) = 'tz04b';
+  t_names(index_tz05a) = 'tz05a';   t_names(index_tz05b) = 'tz05b';
+  t_names(index_tz06a) = 'tz06a';   t_names(index_tz06b) = 'tz06b';
+  t_names(index_tz07a) = 'tz07a';   t_names(index_tz07b) = 'tz07b';
+  t_names(index_tz08a) = 'tz08a';   t_names(index_tz08b) = 'tz08b';
+  t_names(index_tz09a) = 'tz09a';   t_names(index_tz09b) = 'tz09b';
+  t_names(index_tz10a) = 'tz10a';   t_names(index_tz10b) = 'tz10b';
+  t_names(index_tz11a) = 'tz11a';   t_names(index_tz11b) = 'tz11b';
 end
 
 // Paths for results saving
@@ -173,7 +175,7 @@ count_tmParams = length(params_indexes); // quantity of the temperature
 count_dtmParams = count_tmParams - 1; // quantity of the temperatures delta's
 
 for i = 1 : count_dtmParams
-  dt_name(i) = 'd' + t_name(i + 1); // names of the temperatures delta's
+  dt_names(i) = 'd' + t_names(i + 1); // names of the temperatures delta's
 end
 ext_archive = 'txt'; // archives files extention
 
@@ -184,11 +186,11 @@ if diag_sys == 1
   params(index_Gt) = struct('name', 'Gt', 'archIndexStart', 120, 'archIndexEnd', 120, 'data', []);
   params(index_reg) = struct('name', 'p2', 'archIndexStart', 38, 'archIndexEnd', 38, 'data', []);
   params(index_n2) = struct('name', 'n2', 'archIndexStart', 10, 'archIndexEnd', 10, 'data', []);
-  params(index_tm) = struct('name', t_name, 'archIndexStart', 47, 'archIndexEnd', 52, 'data', []);
+  params(index_tm) = struct('name', t_names, 'archIndexStart', 47, 'archIndexEnd', 52, 'data', []);
 else
   index_reg = 1;  index_tm = 2; // parameters indexes
   params(index_reg) = struct('name', 'ngv', 'archIndexStart', 14, 'archIndexEnd', 14, 'data', []);
-  params(index_tm) = struct('name', t_name, 'archIndexStart', 53, 'archIndexEnd', 80, 'data', []);
+  params(index_tm) = struct('name', t_names, 'archIndexStart', 53, 'archIndexEnd', 80, 'data', []);
 end
 
 colors = [1, 2, 3, 5, 19, 16, 27, 22, 13, 6, 9, 32, 28, 21, 25, 23, 26, 17];
@@ -224,7 +226,7 @@ resTxtFileName = str_currCalcIdentif + '.' + ext_out_txt; // the text results fi
 //=============================================================================================================================
 
 // CALCULATIONS
-if importSteady == 1
+if importSteady
   [reg_all, dtm_all] = importSteadyPoints(path_steady, steadyFileName);
 else
   [reg_all, dtm_all] = calcSteadyPoints();
@@ -267,37 +269,27 @@ printf("[INFO]: Characteristics was defined. Steady mode points quantity: %i\n",
 str_datetime = getDateTimeString();
 
 //  Graphics plot
-if plotGraphs == 1
-  windowNumber = max(winsid()) + 1;
-  for t = 1 : count_dtmParams
-    strImagesTitle = dt_name(t) + ' = f(Ngte)';
-    hWin = scf(windowNumber + t); plot2d(N_all, dtm_all_sort(:, t), -9); xgrid; 
-    title(strImagesTitle + ',  ' + str_datetime, 'fontsize', 4); // steady mode points
-    hWin.figure_name = strImagesTitle;
-
-    //  Plot the approximate line
-    plot2d(Ngte_init, dtm_apr(:, t), 15); e = gce(); e.children.thickness = 2;
-    // Plot the approximate lines points
-    plot2d(Ngte_init, dtm_apr(:, t), -14);
-  end
+if plotGraphs
+  plotResults(N_all, dtm_all_sort, Ngte_init, dtm_apr, ..
+              count_dtmParams, plotGraphsSameWin, dt_names, 'Ngte', str_datetime);
 end
 
 //    SAVE RESULTS
 // Export steady mode points in a text file
-if exportSteadyPoints == 1
+if exportSteadyPoints & ~importSteady
   saveSteadyPoints(path_steady, steadyFileName, reg_all, dtm_all);
 end
 
 // Export results plots in graphics files
-if exportResToImgFiles == 1
+if exportResToImgFiles
   saveResToGraphicFiles(path_resImage, str_currCalcIdentif, ext_out_images);
 end
 
 //  Save results in a text file
-if (exportResToTxtFile == 1) & (importSteady == 0)
+if exportResToTxtFile
   saveResToTextFile(path_resTxt, resTxtFileName, str_currCalcIdentif, str_datetime, ..
                     polynPow, count_dtmParams, count_initCharsPnts, ..
-                    Ngte_init, 'Ngte', dtm_apr, dt_name);
+                    Ngte_init, 'Ngte', dtm_apr, dt_names);
 end
 
 //  Show evaluating time in a console

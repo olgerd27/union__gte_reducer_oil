@@ -237,6 +237,8 @@ function plotResults(x_points, y_points, x_polyn, y_polyn, ..
       oneWin_parNames = part(oneWin_parNames, [1 : length(oneWin_parNames) - length(sep_win_par_names)]);
       hWin.figure_name = '[' + oneWin_parNames + ']' + str_y_name;
       oneWin_parNames = '';
+      hWin.figure_size = [800 800];
+      hWin.figure_position = [100 100];
       
       // increase the iterators values
       it_win = it_win + 1;

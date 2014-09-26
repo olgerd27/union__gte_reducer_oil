@@ -1,11 +1,11 @@
 // Functions for performing the in-, out- operations
 
 // ======= DATA READING =======
-function [reg_all, dtm_all] = importSteadyPoints(path, fileName)
+function [reg_all, dtm_all] = importSteadyPoints(path, dirSep, fileName)
 //*******************************************************
 // 
 //*******************************************************
-  filePathName = path + '/' + fileName;
+  filePathName = path + dirSep + fileName;
   
   if ~isfile(filePathName)
     printf("[ERROR]: cannot read the steady mode points data from the file:\n");
@@ -56,7 +56,7 @@ function resData = getValidData(fileName, initData)
   resData = initData(from : to, :);
 endfunction
 
-function resParameters = readParametersData(filePath, fileName, fileExt, initParameters)
+function resParameters = readParametersData(filePath, dirSep, fileName, fileExt, initParameters)
 //******************************************************************************************
 // Function that reads parameters data from a archive file.                                *
 // IN:  filePath - path to the archive file                                                *
@@ -66,7 +66,7 @@ function resParameters = readParametersData(filePath, fileName, fileExt, initPar
 //      about parameters                                                                   *
 // OUT: resParameters - array of result structures of archives with readed parameters data *
 //******************************************************************************************
-  filePathName = filePath + '/' + fileName + fileExt;
+  filePathName = filePath + dirSep + fileName + fileExt;
   if ~isfile(filePathName)
     printf("[ERROR]: cannot read the data from the archive file:\n");
     printf("\t''%s''\n", filePathName);
@@ -84,7 +84,7 @@ function resParameters = readParametersData(filePath, fileName, fileExt, initPar
 endfunction
 
 // ======= OUT RESULTS =======
-function saveSteadyPoints(path, fileName, reg, dt)
+function saveSteadyPoints(path, dirPath, fileName, reg, dt)
 //*****************************************************
 // Save the steady mode points values to a text file  *
 // IN:  path - path to the file directory             *
@@ -93,7 +93,7 @@ function saveSteadyPoints(path, fileName, reg, dt)
 //      dt - 'dt' parameters data for saving          *
 //*****************************************************
   Ncols = size(dt, 'c');  Nrows = size(dt, 'r');
-  filePathName = path + '/' + fileName;
+  filePathName = path + dirPath + fileName;
   
   if ~isdir(path)
     createdir(path);
@@ -118,7 +118,7 @@ function saveSteadyPoints(path, fileName, reg, dt)
   printf("\t%s\n", filePathName);
 endfunction
 
-function saveResToGraphicFiles(path_imagesOut, calcIdentif, ext_images)
+function saveResToGraphicFiles(path_imagesOut, dirSep, calcIdentif, ext_images)
 //*********************************************************************************
 // Save results to a graphics file.                                               *
 // IN:  path_imagesOut - path to the out files                                    *
@@ -132,7 +132,7 @@ function saveResToGraphicFiles(path_imagesOut, calcIdentif, ext_images)
     abort;
   end
   // go into the special directory (dir for current calculation)
-  path_imagesOut = path_imagesOut + '/' + calcIdentif;
+  path_imagesOut = path_imagesOut + dirSep + calcIdentif;
   if isdir(path_imagesOut)
     removedir(path_imagesOut);
   end
@@ -148,13 +148,13 @@ function saveResToGraphicFiles(path_imagesOut, calcIdentif, ext_images)
     h = scf(figureIDs(i));
     exportFileName = h.figure_name + '.' + ext_images;
     exportFileName = strsubst(exportFileName, ' ', ''); // spaces deleting
-    filePathName = path_imagesOut + '/' + exportFileName;
+    filePathName = path_imagesOut + dirSep + exportFileName;
     xs2png(h, filePathName);
     printf("\t%s\n", filePathName);
   end
 endfunction
 
-function saveResToTextFile(path, fileName, strTitle, strDateTime, powers, ..
+function saveResToTextFile(path, dirSep, fileName, strTitle, strDateTime, powers, ..
                            Ncols, Nrows, .. 
                            par_regim_data, par_regim_name, par_oil_data, par_oil_names)
 //***************************************************************************************************
@@ -171,7 +171,7 @@ function saveResToTextFile(path, fileName, strTitle, strDateTime, powers, ..
 //      par_oil_names - names of the oil parameters (Y-axes)                                        *
 // OUT: ---                                                                                         *
 //***************************************************************************************************
-  filePathName = path + '/' + fileName;
+  filePathName = path + dirSep + fileName;
   
   if ~isdir(path)
     createdir(path);

@@ -40,8 +40,8 @@ plotGraphs = %T;          // Graphs plot: %T - perform, %F - don't perform
 plotGraphsSameWin = %T;   // Plot graphs, some quantity of that is placed on a same window: %T - perform, %F - don't perform
 
 exportSteadyPoints  = %T; // Export steady mode points in the text file: %T - perform, %F - don't perform
-exportResToTxtFile  = %F; // Export the oil's characteristics points values in a text file:  %T - perform, %F - don't perform
-exportResToImgFiles = %F; // Export plotted the oil's characters points values in a graphics files with "png" extension:
+exportResToTxtFile  = %T; // Export the oil's characteristics points values in a text file:  %T - perform, %F - don't perform
+exportResToImgFiles = %T; // Export plotted the oil's characters points values in a graphics files with "png" extension:
                           // %T - perform, %F - don't perform
 
 // The initial characteristics Ngte = f(p2) from a set of thermodynamics characteristics
@@ -135,9 +135,10 @@ else
   t_names(index_tz11a) = 'tz11a';   t_names(index_tz11b) = 'tz11b';
 end
 
-// Paths for results saving
-//path_res = "~/Programming/scilab/projects/union__gte_reducer_oil/out";
-path_res = "D:\work\GTA_M56\documentation_preparing\programm_methods_initial_data\apps\union__gte_reducer_oil\out";
+// Paths for external data
+sep = filesep(); // the dirs separator
+//path_data = "~/Programming/scilab/projects/union__gte_reducer_oil/data";
+path_data = "D:\work\GTA_M56\documentation_preparing\programm_methods_initial_data\apps\union__gte_reducer_oil\data";
 //=============================================================================================================================
 
 // LOADING additional files with functions
@@ -149,7 +150,7 @@ names_sourceFiles = [
                     "special_functions.sci";
                     ];
 for i = 1 : size(names_sourceFiles, 'r')
-  exec(path_sourceFiles + '/' + names_sourceFiles(i)); // loading functionality from the files
+  exec(path_sourceFiles + sep + names_sourceFiles(i)); // loading functionality from the files
 end
 //=============================================================================================================================
 
@@ -177,7 +178,6 @@ count_dtmParams = count_tmParams - 1; // quantity of the temperatures delta's
 for i = 1 : count_dtmParams
   dt_names(i) = 'd' + t_names(i + 1); // names of the temperatures delta's
 end
-ext_archive = 'txt'; // archives files extention
 
 // Structure for storing parameters data, readed from an archive file
 if diag_sys == 1
@@ -196,27 +196,32 @@ end
 colors = [1, 2, 3, 5, 19, 16, 27, 22, 13, 6, 9, 32, 28, 21, 25, 23, 26, 17];
 
 // INITIAL DATA FOR EXPORT
-// Relative path's for saving results. 
-// Structure of the results tree directories is constant and therefore this paths variables moved from a Initial data block at here
-path_resGTERltv = "gte"; // relative path for saving the GTE's results characteristics
-path_resReducerRltv = "reducer"; // relative path for saving the reducer's results characteristics
+// Relative path's for data saving
+path_intRltv = "int"; // relative path for saving internal data, that is need for programm work
+path_resRltv = "out"; // relative path for saving results data
+path_GTERltv = "gte"; // relative path for saving the GTE's results characteristics
+path_reducerRltv = "reducer"; // relative path for saving the reducer's results characteristics
 path_steadyRltv = "steady_modes"; // relative path for saving the steady mode points values
 path_resTxtRltv = "txt"; // relative path for saving the text result
 path_resImageRltv = "images"; // relative path for saving the images
 // Define the result relative path in accordance with type of current PKSTD diagnostics system
 if diag_sys == 1
-  path_resDiagSysRltv = path_resGTERltv;
+  path_diagSysRltv = path_GTERltv;
 else
-  path_resDiagSysRltv = path_resReducerRltv;
+  path_diagSysRltv = path_reducerRltv;
 end
+// TODO: definition the dirs separator place here
 // Results paths
-path_steady = path_res + '/' + path_resDiagSysRltv + '/' + path_steadyRltv; // the steady modes points absolute path
-path_resTxt = path_res + '/' + path_resDiagSysRltv + '/' + path_resTxtRltv; // the text results absolute path
-path_resImage = path_res + '/' + path_resDiagSysRltv + '/' + path_resImageRltv; // the graphic results absolute path
-// Results files extensions
-ext_steady = 'dat';
-ext_out_images = 'png';
-ext_out_txt = 'rez';
+path_int = path_data + sep + path_intRltv; // absolute path for saving the internal data
+path_res = path_data + sep + path_resRltv; // absolute path for saving the results data
+path_steady = path_int + sep + path_diagSysRltv + sep + path_steadyRltv; // the steady modes points absolute path
+path_resTxt = path_res + sep + path_diagSysRltv + sep + path_resTxtRltv; // the text results absolute path
+path_resImage = path_res + sep + path_diagSysRltv + sep + path_resImageRltv; // the graphic results absolute path
+// Files extensions
+ext_archive = 'txt'; // archives in-files extension
+ext_steady = 'dat'; // steady out- and in-files extension
+ext_out_images = 'png'; // images out-files extension
+ext_out_txt = 'rez'; // text out-files extension
 // Identification current calculation: [sheep]_[board]_[sectorLength]_[sectorShift]_[modelLength]_[forecastInterval]
 str_currCalcIdentif = 's=' + string(sheep) + '_b=' + string(board) + '_sl=' + string(sectorLength) + ..
   '_ss=' + string(sectorShift) + '_ml=' + string(modelLength) + '_fi=' + string(forecastInterval);
@@ -227,7 +232,7 @@ resTxtFileName = str_currCalcIdentif + '.' + ext_out_txt; // the text results fi
 
 // CALCULATIONS
 if importSteady
-  [reg_all, dtm_all] = importSteadyPoints(path_steady, steadyFileName);
+  [reg_all, dtm_all] = importSteadyPoints(path_steady, sep, steadyFileName);
 else
   [reg_all, dtm_all] = calcSteadyPoints();
 end
@@ -277,17 +282,17 @@ end
 //    SAVE RESULTS
 // Export steady mode points in a text file
 if exportSteadyPoints & ~importSteady
-  saveSteadyPoints(path_steady, steadyFileName, reg_all, dtm_all);
+  saveSteadyPoints(path_steady, sep, steadyFileName, reg_all, dtm_all);
 end
 
 // Export results plots in graphics files
 if exportResToImgFiles
-  saveResToGraphicFiles(path_resImage, str_currCalcIdentif, ext_out_images);
+  saveResToGraphicFiles(path_resImage, sep, str_currCalcIdentif, ext_out_images);
 end
 
 //  Save results in a text file
 if exportResToTxtFile
-  saveResToTextFile(path_resTxt, resTxtFileName, str_currCalcIdentif, str_datetime, ..
+  saveResToTextFile(path_resTxt, sep, resTxtFileName, str_currCalcIdentif, str_datetime, ..
                     polynPow, count_dtmParams, count_initCharsPnts, ..
                     Ngte_init, 'Ngte', dtm_apr, dt_names);
 end

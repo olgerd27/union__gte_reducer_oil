@@ -17,7 +17,7 @@ function [reg_all, dtm_all] = calcSteadyPoints()
     clear reg_steady; clear tm_steady; clear dtm_steady; clear arrayNumber_steady;
   
     //  READING an archive file
-    params = readParametersData(path_archives, filesArchive(fileIndex), '.' + ext_archive, params);
+    params = readParametersData(path_archives, sep, filesArchive(fileIndex), '.' + ext_archive, params);
 
     // Getting the parameters arrays with reduction to a normal atmospheric condition
     // This parameters is take out of the if-else, because name of its index variable for the both diagnostic systems is equal
@@ -109,7 +109,7 @@ function [reg_all, dtm_all] = calcSteadyPoints()
 
       printf("[ERROR]: There was found %i invalid steady mode point(s) in the %s\n", count_invalidPoints, str_archiveNumberName);
       for i = 1 : count_invalidPoints
-        printf("\tpoint #%i: parameter = ''%s'', number = %i\n", i, dt_name(cols_invalid_dt(i)), rows_invalid(i));
+        printf("\tpoint #%i: parameter = ''%s'', number = %i\n", i, dt_names(cols_invalid_dt(i)), rows_invalid(i));
       end
       
       printf("Continue with deleting invalid points? (1 - yes, 2 - no)\n");
@@ -237,8 +237,8 @@ function plotResults(x_points, y_points, x_polyn, y_polyn, ..
       oneWin_parNames = part(oneWin_parNames, [1 : length(oneWin_parNames) - length(sep_win_par_names)]);
       hWin.figure_name = '[' + oneWin_parNames + ']' + str_y_name;
       oneWin_parNames = '';
-      hWin.figure_size = [800 800];
-      hWin.figure_position = [100 100];
+      hWin.figure_size = [1000 700];
+      hWin.figure_position = [50 50];
       
       // increase the iterators values
       it_win = it_win + 1;

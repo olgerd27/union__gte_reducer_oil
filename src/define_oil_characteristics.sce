@@ -7,19 +7,32 @@ printf("*********************\n");
 printf("* START application *\n");
 printf("*********************\n");
 
+// Additional definitions for start programm execution
+TRUE = %T;      FALSE = %F;   // true-false definition
+GTE_OIL = 1;    RED_OIL = 2;  // 1 - GTE diagnostics oil's system, 2 - reducer diagnostics oil's system
+
+function path = getExecScriptPath()
+//***************************************************************
+// Function for obtain the current execution script file path   *
+//***************************************************************
+  [u, t, n] = file();
+  index = grep(n, "/(?:.*\.sci|.*\.sce)$/", "r");
+  path = fileparts(n(index(1)));
+endfunction
+
 //  INITIAL DATA
-diag_sys = 2;             // PKSTD diagnostics system: 1 - GTE oil's system, 2 - reducer oil's system
+diag_sys = RED_OIL;       // PKSTD diagnostics system: 
 sheep = 2;                // Sheep number
 board = 2;                // Board: 1 - right, 2 - left
 
-sectorLength = 900;       // Length of splitting sectors
+sectorLength = 1100;       // Length of splitting sectors
 sectorShift = 300;        // Shift of sector with length sectorLength in every main cycle iteration
 modelLength = 300;        // Length of the data model for performing of the forecasting temperature parameters on steady modes
 forecastInterval = 100;   // Interval for the forecasting temperature parameters on steady modes
 
-importSteady = %T;        // Import calculated steady mode points to the text file: %T - perform, %F - don't perform
+importSteady = FALSE;      // Import calculated steady mode points to the text file: TRUE - perform, FALSE - don't perform
 if ~importSteady
-  if diag_sys == 1
+  if diag_sys == GTE_OIL
     UGt_strange = 10;     // Settings Gt strange for defining the steady modes of GTE's work
     Un2_xx = 5500;        // Settings XX by n2 parameter for defining the steady modes of GTE's work
   else
@@ -31,18 +44,18 @@ if ~importSteady
   Udtm_valid_max = 80;    // Settings dtm max value for defining the invalid points
 end
 
-if diag_sys == 2
+if diag_sys == RED_OIL
   Nnom = 20020;           // The reducer power on the nominal reducer's work mode
   ngv_nom = 240;          // Rotation speed of the reducer outlet shaft on the nominal reducer's work mode
 end
 
-plotGraphs = %T;          // Graphs plot: %T - perform, %F - don't perform
-plotGraphsSameWin = %T;   // Plot graphs, some quantity of that is placed on a same window: %T - perform, %F - don't perform
+plotGraphs = TRUE;          // Graphs plot: TRUE - perform, FALSE - don't perform
+plotGraphsSameWin = TRUE;   // Plot graphs, some quantity of that is placed on a same window: TRUE - perform, FALSE - don't perform
 
-exportSteadyPoints  = %T; // Export steady mode points in the text file: %T - perform, %F - don't perform
-exportResToTxtFile  = %T; // Export the oil's characteristics points values in a text file:  %T - perform, %F - don't perform
-exportResToImgFiles = %T; // Export plotted the oil's characters points values in a graphics files with "png" extension:
-                          // %T - perform, %F - don't perform
+exportSteadyPoints  = TRUE; // Export steady mode points in the text file: TRUE - perform, FALSE - don't perform
+exportResToTxtFile  = FALSE; // Export the oil's characteristics points values in a text file:  TRUE - perform, FALSE - don't perform
+exportResToImgFiles = FALSE; // Export plotted the oil's characters points values in a graphics files with "png" extension:
+                             // TRUE - perform, FALSE - don't perform
 
 // The initial characteristics Ngte = f(p2) from a set of thermodynamics characteristics
 p2_init = [1.795; 2.251; 2.702; 3.380; 4.147; 5.111; 6.322; 7.049; 7.775; 8.408;
@@ -52,7 +65,7 @@ Ngte_init = [110.4; 273.4; 434.4; 676.5; 950.2; 1294.5; 2052.5; 2643.4; 3234.2; 
 
 // Indexes of the oil's parameters
 INIT_VALUE = 0;  index_in = INIT_VALUE; index_out = INIT_VALUE; // initialization
-if diag_sys == 1
+if diag_sys == GTE_OIL
   index_in = 1;  index_per = 2;  index_tkvd = 3;  index_tnd = 4;  index_tv = 5;  index_out = 6;
 else
   index_in = 1;      index_out = 2;
@@ -64,7 +77,7 @@ else
 end
 
 // Polynomial powers that describe the oil's characteristics dtX = f(Ngte)
-if diag_sys == 1
+if diag_sys == GTE_OIL
   polynPow(index_per - index_in) = 2;   // dtm_per
   polynPow(index_tkvd - index_in) = 2;  // dtm_tkvd
   polynPow(index_tnd - index_in) = 2;   // dtm_tnd
@@ -109,12 +122,12 @@ if ~importSteady
                   'mo_2013_2_14_10_1_0';  'mo_2013_2_25_13_24_20';  'mo_2013_2_25_18_44_48'; 'mo_2013_2_25_9_58_3';
                   'mo_2013_2_26_9_28_29'; 'mo_2013_3_11_12_48_00'];
 
-  //path_archives = "/media/oleg/users/Oleg/work_zm/export/GTA_M56/Archivs/sheep2/sheep2_bort2/bort_2-all";
-  path_archives = "D:\work\GTA_M56\Archivs\sheep_2\bort_2-left_all";
+  path_archives = "/media/oleg/users/Oleg/work_zm/export/GTA_M56/Archivs/GTE_DA91_#4_5/GTE_DA91_#4/all";
+  //path_archives = "D:\work\GTA_M56\Archivs\GTE_DA91_#4_5\GTE_DA91_#4\all";
 end
 
 // Names of oil's temperatures
-if diag_sys == 1
+if diag_sys == GTE_OIL
   t_names(index_in) = 'tm_gte_in';  t_names(index_per) = 'tm_per';
   t_names(index_tkvd) = 'tm_tkvd';  t_names(index_tnd) = 'tm_tnd';
   t_names(index_tv) = 'tm_tv';      t_names(index_out) = 'tm_gte_out';
@@ -134,23 +147,17 @@ else
   t_names(index_tz10a) = 'tz10a';   t_names(index_tz10b) = 'tz10b';
   t_names(index_tz11a) = 'tz11a';   t_names(index_tz11b) = 'tz11b';
 end
-
-// Paths for external data
-sep = filesep(); // the dirs separator
-//path_data = "~/Programming/scilab/projects/union__gte_reducer_oil/data";
-path_data = "D:\work\GTA_M56\documentation_preparing\programm_methods_initial_data\apps\union__gte_reducer_oil\data";
 //=============================================================================================================================
 
 // LOADING additional files with functions
-//path_sourceFiles = "~/Programming/scilab/projects/union__gte_reducer_oil/src";
-path_sourceFiles = "D:\work\GTA_M56\documentation_preparing\programm_methods_initial_data\apps\union__gte_reducer_oil\src";
+path_sourceFiles = getExecScriptPath();
 names_sourceFiles = [
                     "add_functions.sci";
                     "in_out_functions.sci";
                     "special_functions.sci";
                     ];
 for i = 1 : size(names_sourceFiles, 'r')
-  exec(path_sourceFiles + sep + names_sourceFiles(i)); // loading functionality from the files
+  exec(path_sourceFiles + names_sourceFiles(i)); // loading functionality from the script files
 end
 //=============================================================================================================================
 
@@ -162,7 +169,7 @@ if (index_in == INIT_VALUE) | (index_out == INIT_VALUE)
 end
 
 // params indexes arrays 
-if diag_sys == 1
+if diag_sys == GTE_OIL
   params_indexes = [index_in; index_per; index_tkvd; index_tnd; index_tv; index_out];
 else
   params_indexes = [index_in; index_out; 
@@ -180,7 +187,7 @@ for i = 1 : count_dtmParams
 end
 
 // Structure for storing parameters data, readed from an archive file
-if diag_sys == 1
+if diag_sys == GTE_OIL
   index_t0 = 1;  index_Gt = 2;  index_reg = 3;  index_n2 = 4;  index_tm = 5; // parameters indexes
   params(index_t0) = struct('name', 't0', 'archIndexStart', 16, 'archIndexEnd', 18, 'data', []);
   params(index_Gt) = struct('name', 'Gt', 'archIndexStart', 120, 'archIndexEnd', 120, 'data', []);
@@ -197,6 +204,7 @@ colors = [1, 2, 3, 5, 19, 16, 27, 22, 13, 6, 9, 32, 28, 21, 25, 23, 26, 17];
 
 // INITIAL DATA FOR EXPORT
 // Relative path's for data saving
+path_dataRltv = "data"; // ralative path for all external data storing
 path_intRltv = "int"; // relative path for saving internal data, that is need for programm work
 path_resRltv = "out"; // relative path for saving results data
 path_GTERltv = "gte"; // relative path for saving the GTE's results characteristics
@@ -205,13 +213,19 @@ path_steadyRltv = "steady_modes"; // relative path for saving the steady mode po
 path_resTxtRltv = "txt"; // relative path for saving the text result
 path_resImageRltv = "images"; // relative path for saving the images
 // Define the result relative path in accordance with type of current PKSTD diagnostics system
-if diag_sys == 1
+if diag_sys == GTE_OIL
   path_diagSysRltv = path_GTERltv;
 else
   path_diagSysRltv = path_reducerRltv;
 end
-// TODO: definition the dirs separator place here
+sep = filesep(); // the dirs separator
 // Results paths
+// get a root path
+indexes_sep = strindex(path_sourceFiles, sep);
+index_last_ch = indexes_sep(length(indexes_sep) - 1) - 1; // index to last character before the last: [THIS INDEX]/[DIR NAME]/
+path_root = part(path_sourceFiles, indexes_sep(1) : index_last_ch);
+// forming the aim absolute paths
+path_data = path_root + sep + path_dataRltv; // absolute path for all external data storing
 path_int = path_data + sep + path_intRltv; // absolute path for saving the internal data
 path_res = path_data + sep + path_resRltv; // absolute path for saving the results data
 path_steady = path_int + sep + path_diagSysRltv + sep + path_steadyRltv; // the steady modes points absolute path
@@ -241,7 +255,7 @@ count_steadyModes = length(reg_all); // quantity of the all obtained steady mode
 count_initCharsPnts = length(Ngte_init); // quantity of points in initial characteristics (values in every array)
 
 //  Define the power (N) values
-if diag_sys == 1
+if diag_sys == GTE_OIL
   N_all = p2ToPower(reg_all, count_steadyModes, p2_init, Ngte_init);
 else
   N_all = ngvToPower(reg_all, Nnom, ngv_nom);

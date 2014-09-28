@@ -23,7 +23,7 @@ function [reg_all, dtm_all] = calcSteadyPoints()
     // This parameters is take out of the if-else, because name of its index variable for the both diagnostic systems is equal
     reg = params(index_reg).data; // the regime parameter values
     tm = params(index_tm).data;
-    if diag_sys == 1
+    if diag_sys == GTE_OIL
       t0 = mean(params(index_t0).data, 'c');
       alpha = sqrt(288 ./ (t0 + 273)); // alpha coefficient for reductions parameters to normal atmospheric conditions
       Gt = params(index_Gt).data;
@@ -44,7 +44,7 @@ function [reg_all, dtm_all] = calcSteadyPoints()
       
       // split arrays, calc strange or average values of parameters and define steady mode
       isSteadyMode = %F;
-      if diag_sys == 1
+      if diag_sys == GTE_OIL
         Gt_strange = strange(Gt(to - sectorLength + 1 : to)); // there are splitting and strange value calculation
         n2_avrg = median(n2(from : to));
         Gt_avrg = median(Gt(from : to));
@@ -58,7 +58,7 @@ function [reg_all, dtm_all] = calcSteadyPoints()
       // Processing the steady modes of GTE's work points values
       if isSteadyMode
         steadyIndex = steadyIndex + 1;
-        if diag_sys == 1
+        if diag_sys == GTE_OIL
           reg_steady(steadyIndex) = median(reg(from : to));
         else
           reg_steady(steadyIndex) = reg_avrg; // already calculated

@@ -10,7 +10,6 @@ function [reg_all, dtm_all] = importSteadyPoints(path, dirSep, fileName)
   if ~isfile(filePathName)
     printf("[ERROR]: cannot read the steady mode points data from the file:\n");
     printf("\t''%s''\n", filePathName);
-    printf("\tThe reason: this file is not exist or it is not a file\n");
     abort;
   end
 
@@ -70,7 +69,6 @@ function resParameters = readParametersData(filePath, dirSep, fileName, fileExt,
   if ~isfile(filePathName)
     printf("[ERROR]: cannot read the data from the archive file:\n");
     printf("\t''%s''\n", filePathName);
-    printf("\tThe reason: this file is not exist or it is not a file\n");
     abort;
   end
   

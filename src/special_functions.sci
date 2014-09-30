@@ -122,7 +122,7 @@ function [reg_all, dtm_all] = calcSteadyPoints()
       else
         plotInvalidArchive( reg, tm, reg_steady, tm_steady, arrayNumber_steady, ..
                             cols_invalid_dt, rows_invalid, rows_invalid_u, ..
-                            index_in, params(index_reg).name, t_name, ..
+                            index_in, params(index_reg).name, t_names, ..
                             str_archiveNumberName, colors );
         printf("--------------------------------------------------------------------------------------------------------\n\n");
         abort;
@@ -253,7 +253,7 @@ endfunction
 
 function plotInvalidArchive( reg, tm, reg_steady, tm_steady, arrayNumber_steady, ..
                              cols_invalid_dt, rows_invalid, rows_invalid_u, ..
-                             index_in, reg_name, t_name, ..
+                             index_in, reg_name, t_names, ..
                              str_archiveNumberName, colors )
 //*************************************************************************************************************
 // Function for plotting archive parameters with the invalid steady mode points.                              *
@@ -267,7 +267,7 @@ function plotInvalidArchive( reg, tm, reg_steady, tm_steady, arrayNumber_steady,
 //      rows_invalid_u - the unique values from the 'rows_invalid' arrays                                     *
 //      index_in - the number of the index temperature at the entry                                           *
 //      reg_name - the name of the regime parameter                                                           *
-//      t_name - the array of the temperatures names                                                          *
+//      t_names - the array of the temperatures names                                                         *
 //      str_archiveNumberName - the string of union information about number and name archive                 *
 //      colors - the colors indexes arrays                                                                    *
 // OUT: ---                                                                                                   *
@@ -298,10 +298,10 @@ function plotInvalidArchive( reg, tm, reg_steady, tm_steady, arrayNumber_steady,
   plot2d(x_time, reg * kRegScale, colors(1));  e = gce(); e.children.thickness = 2;
   legend_str = [legend_str; reg_name];
   plot2d(x_time, tm(:, index_in), colors(2));  e = gce(); e.children.thickness = 2;
-  legend_str = [legend_str; t_name(index_in)];
+  legend_str = [legend_str; t_names(index_in)];
   for i = 1 : count_invalidParams
     plot2d(x_time, tm(:, cols_invalid_t_u(i)), colors(i + 2));  e = gce(); e.children.thickness = 2;
-    legend_str = [legend_str; t_name(cols_invalid_t_u(i))];
+    legend_str = [legend_str; t_names(cols_invalid_t_u(i))];
   end
   legend(hPlot, legend_str, 1);
 

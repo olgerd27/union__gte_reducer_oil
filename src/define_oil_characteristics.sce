@@ -23,15 +23,15 @@ endfunction
 
 
 //  INITIAL DATA
-diag_sys = RED_OIL;       // PKSTD diagnostics system
-gte_numb = 4;             // The GTE DA91 number
+gte_numb = 3;             // The GTE DA91 number
+diag_sys = RED_OIL;       // The PKSTD diagnostics system
 
-sectorLength = 1800;       // Length of splitting sectors
+sectorLength = 1200;       // Length of splitting sectors
 sectorShift = 300;        // Shift of sector with length sectorLength in every main cycle iteration
 modelLength = 300;        // Length of the data model for performing of the forecasting temperature parameters on steady modes
 forecastInterval = 300;   // Interval for the forecasting temperature parameters on steady modes
 
-importSteady = TRUE;      // Import calculated steady mode points to the text file: TRUE - perform, FALSE - don't perform
+importSteady = FALSE;      // Import calculated steady mode points to the text file: TRUE - perform, FALSE - don't perform
 if ~importSteady
   if diag_sys == GTE_OIL
     UGt_strange = 10;     // Settings Gt strange for defining the steady modes of GTE's work
@@ -53,16 +53,16 @@ end
 plotGraphs = TRUE;          // Graphs plot: TRUE - perform, FALSE - don't perform
 plotGraphsSameWin = TRUE;   // Plot graphs, some quantity of that is placed on a same window: TRUE - perform, FALSE - don't perform
 
-exportSteadyPoints  = FALSE; // Export steady mode points in the text file: TRUE - perform, FALSE - don't perform
-exportResToTxtFile  = TRUE; // Export the oil's characteristics points values in a text file:  TRUE - perform, FALSE - don't perform
-exportResToImgFiles = TRUE; // Export plotted the oil's characters points values in a graphics files with "png" extension:
+exportSteadyPoints  = TRUE; // Export steady mode points in the text file: TRUE - perform, FALSE - don't perform
+exportResToTxtFile  = FALSE; // Export the oil's characteristics points values in a text file:  TRUE - perform, FALSE - don't perform
+exportResToImgFiles = FALSE; // Export plotted the oil's characters points values in a graphics files with "png" extension:
                             // TRUE - perform, FALSE - don't perform
 
 // The initial characteristics Ngte = f(p2) from a set of thermodynamics characteristics
-p2_init = [1.795; 2.251; 2.702; 3.380; 4.147; 5.111; 6.322; 7.049; 7.775; 8.408;
-           9.152; 9.836; 10.601; 12.189; 13.692; 15.132; 16.397; 17.560; 18.671; 19.782];
-Ngte_init = [110.4; 273.4; 434.4; 676.5; 950.2; 1294.5; 2052.5; 2643.4; 3234.2; 3749.1;
-             4353.8; 5098.5; 5958.6; 7823; 9869.7; 11981; 14013.4; 16015.3; 18017.2; 20019.1];
+p2_init = [2.000; 2.870; 3.740; 4.620; 5.490; 6.710; 7.200; 7.580; 8.140; 9.070; 10.020; 10.980; 12.000;
+           12.980; 14.020; 14.990; 16.254; 17.467; 18.630; 19.792];
+Ngte_init = [56.5; 367.9; 730.8; 1121.4; 1633.95; 2558.71; 2930.14; 3218.18; 3642.66; 4438.17; 5347.96;
+             6375.57; 7756.61; 9121.91; 10601.46; 12011.48; 14013.4; 16015.31; 17966.03; 20019.14];
 
 // Indexes of the oil's parameters
 INIT_VALUE = 0;  index_in = INIT_VALUE; index_out = INIT_VALUE; // initialization
@@ -116,15 +116,16 @@ end
 
 if ~importSteady
   // Setting archives path, names and extension
-  filesArchive = [// 1 etap PI
-                  'mo_2013_1_3_23_0_0';   'mo_2013_1_3_9_52_48';  'mo_2013_1_4_9_34_5'; 'mo_2013_1_5_9_27_47';
-                  'mo_2013_1_8_11_10_49'; 'mo_2013_1_8_16_25_21';
-                  // 2 etap PI + PSI
-                  'mo_2013_2_14_10_1_0';  'mo_2013_2_25_13_24_20';  'mo_2013_2_25_18_44_48'; 'mo_2013_2_25_9_58_3';
-                  'mo_2013_2_26_9_28_29'; 'mo_2013_3_11_12_48_00'];
+  filesArchive = [
+    'mo_2008_9_9_15_44_6'; 'mo_2008_9_12_9_4_48'; 'mo_2008_9_12_14_18_12'; 'mo_2008_9_19_15_58_17';
+    'mo_2008_9_24_10_25_12'; 'mo_2008_10_2_9_11_35'; 'mo_2008_10_6_9_55_23'; 'mo_2008_10_8_11_0_6';
+    'mo_2008_10_24_13_59_25'; 'mo_2008_10_27_11_2_41'; 'mo_2008_10_27_15_50_49'; 'mo_2008_10_29_12_58_49(dobav)';
+    'mo_2008_11_1_8_26_1'; 'mo_2008_11_4_14_28_8'; 'mo_2008_11_5_10_23_3'; 'mo_2009_2_26_12_33_16';
+    'mo_2009_2_26_15_42_48'; 'mo_2009_2_27_9_27_46'; 'mo_2009_3_4_15_16_16(soed)'; 'mo_2009_3_5_15_19_14';
+    'mo_2009_3_6_10_35_11'; 'mo_2009_3_10_15_52_41(soed)'; 'mo_2009_3_12_14_44_25'];
 
-  //path_archives = "/media/oleg/users/Oleg/work_zm/export/GTA_M56/Archivs/GTE_DA91_#4_5/GTE_DA91_#4/all";
-  path_archives = "D:\work\GTA_M56\Archivs\GTE_DA91_#4_5\GTE_DA91_#4\all";
+  path_archives = "/media/oleg/users/Oleg/work_zm/export/GTA_M56/Archivs/GTE_DA91_#2_3/GTE_DA91_#3";
+  //path_archives = "D:\work\GTA_M56\Archivs\GTE_DA91_#2_3\GTE_DA91_#3";
 end
 
 // Names of oil's temperatures
@@ -319,4 +320,3 @@ printf("\n[INFO]: Evaluating time: %i min  %4.1f sec\n", int(dT / 60), dT - int(
 printf("**********************\n");
 printf("* FINISH application *\n");
 printf("**********************\n");
-

@@ -20,17 +20,17 @@ function path = getExecScriptPath()
   path = fileparts(n(index(1)));
 endfunction
 
+
 //  INITIAL DATA
-diag_sys = RED_OIL;       // PKSTD diagnostics system: 
-sheep = 2;                // Sheep number
-board = 2;                // Board: 1 - right, 2 - left
+diag_sys = RED_OIL;       // PKSTD diagnostics system
+gte_numb = 4;             // The GTE DA91 number
 
 sectorLength = 1100;       // Length of splitting sectors
 sectorShift = 300;        // Shift of sector with length sectorLength in every main cycle iteration
 modelLength = 300;        // Length of the data model for performing of the forecasting temperature parameters on steady modes
 forecastInterval = 100;   // Interval for the forecasting temperature parameters on steady modes
 
-importSteady = FALSE;      // Import calculated steady mode points to the text file: TRUE - perform, FALSE - don't perform
+importSteady = TRUE;      // Import calculated steady mode points to the text file: TRUE - perform, FALSE - don't perform
 if ~importSteady
   if diag_sys == GTE_OIL
     UGt_strange = 10;     // Settings Gt strange for defining the steady modes of GTE's work
@@ -52,10 +52,10 @@ end
 plotGraphs = TRUE;          // Graphs plot: TRUE - perform, FALSE - don't perform
 plotGraphsSameWin = TRUE;   // Plot graphs, some quantity of that is placed on a same window: TRUE - perform, FALSE - don't perform
 
-exportSteadyPoints  = TRUE; // Export steady mode points in the text file: TRUE - perform, FALSE - don't perform
-exportResToTxtFile  = FALSE; // Export the oil's characteristics points values in a text file:  TRUE - perform, FALSE - don't perform
-exportResToImgFiles = FALSE; // Export plotted the oil's characters points values in a graphics files with "png" extension:
-                             // TRUE - perform, FALSE - don't perform
+exportSteadyPoints  = FALSE; // Export steady mode points in the text file: TRUE - perform, FALSE - don't perform
+exportResToTxtFile  = TRUE; // Export the oil's characteristics points values in a text file:  TRUE - perform, FALSE - don't perform
+exportResToImgFiles = TRUE; // Export plotted the oil's characters points values in a graphics files with "png" extension:
+                            // TRUE - perform, FALSE - don't perform
 
 // The initial characteristics Ngte = f(p2) from a set of thermodynamics characteristics
 p2_init = [1.795; 2.251; 2.702; 3.380; 4.147; 5.111; 6.322; 7.049; 7.775; 8.408;
@@ -122,8 +122,8 @@ if ~importSteady
                   'mo_2013_2_14_10_1_0';  'mo_2013_2_25_13_24_20';  'mo_2013_2_25_18_44_48'; 'mo_2013_2_25_9_58_3';
                   'mo_2013_2_26_9_28_29'; 'mo_2013_3_11_12_48_00'];
 
-  path_archives = "/media/oleg/users/Oleg/work_zm/export/GTA_M56/Archivs/GTE_DA91_#4_5/GTE_DA91_#4/all";
-  //path_archives = "D:\work\GTA_M56\Archivs\GTE_DA91_#4_5\GTE_DA91_#4\all";
+  //path_archives = "/media/oleg/users/Oleg/work_zm/export/GTA_M56/Archivs/GTE_DA91_#4_5/GTE_DA91_#4/all";
+  path_archives = "D:\work\GTA_M56\Archivs\GTE_DA91_#4_5\GTE_DA91_#4\all";
 end
 
 // Names of oil's temperatures
@@ -222,8 +222,8 @@ sep = filesep(); // the dirs separator
 // Results paths
 // get a root path
 indexes_sep = strindex(path_sourceFiles, sep);
-index_last_ch = indexes_sep(length(indexes_sep) - 1) - 1; // index to last character before the last: [THIS INDEX]/[DIR NAME]/
-path_root = part(path_sourceFiles, indexes_sep(1) : index_last_ch);
+index_last_ch = indexes_sep(length(indexes_sep) - 1) - 1; // index to last character before the last dir: [THIS INDEX]/[DIR NAME]/
+path_root = part(path_sourceFiles, 1 : index_last_ch);
 // forming the aim absolute paths
 path_data = path_root + sep + path_dataRltv; // absolute path for all external data storing
 path_int = path_data + sep + path_intRltv; // absolute path for saving the internal data
@@ -236,9 +236,9 @@ ext_archive = 'txt'; // archives in-files extension
 ext_steady = 'dat'; // steady out- and in-files extension
 ext_out_images = 'png'; // images out-files extension
 ext_out_txt = 'rez'; // text out-files extension
-// Identification current calculation: [sheep]_[board]_[sectorLength]_[sectorShift]_[modelLength]_[forecastInterval]
-str_currCalcIdentif = 's=' + string(sheep) + '_b=' + string(board) + '_sl=' + string(sectorLength) + ..
-  '_ss=' + string(sectorShift) + '_ml=' + string(modelLength) + '_fi=' + string(forecastInterval);
+// Identification current calculation: [gte_numb]_[sectorLength]_[sectorShift]_[modelLength]_[forecastInterval]
+str_currCalcIdentif = 'gn=' + string(gte_numb) + '_sl=' + string(sectorLength) + '_ss=' + string(sectorShift) + ..
+                      '_ml=' + string(modelLength) + '_fi=' + string(forecastInterval);
 
 steadyFileName = str_currCalcIdentif + '.' + ext_steady; // the steady mode points full file name
 resTxtFileName = str_currCalcIdentif + '.' + ext_out_txt; // the text results file name full file name

@@ -142,6 +142,11 @@ function saveResToGraphicFiles(path_imagesOut, dirSep, calcIdentif, ext_images)
   // save image data
   printf("[INFO]: Export the results plotted images of the GTE''s oil''s characteristics to the files:\n");
   figureIDs = winsid();
+  if (length(figureIDs) == 0)
+    printf("[ERROR]: Cannot save plotted graphs images to files: no one graph was plotted\n");
+    abort;
+  end
+
   for i = 1 : length(figureIDs)
     h = scf(figureIDs(i));
     exportFileName = h.figure_name + '.' + ext_images;

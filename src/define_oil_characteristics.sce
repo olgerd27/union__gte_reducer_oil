@@ -3,6 +3,7 @@ tic;
 xdel(winsid());
 clear;
 stacksize(5e7);
+warning('off');
 printf("*********************\n");
 printf("* START application *\n");
 printf("*********************\n");
@@ -25,10 +26,10 @@ endfunction
 diag_sys = RED_OIL;       // PKSTD diagnostics system
 gte_numb = 4;             // The GTE DA91 number
 
-sectorLength = 1100;       // Length of splitting sectors
+sectorLength = 1800;       // Length of splitting sectors
 sectorShift = 300;        // Shift of sector with length sectorLength in every main cycle iteration
 modelLength = 300;        // Length of the data model for performing of the forecasting temperature parameters on steady modes
-forecastInterval = 100;   // Interval for the forecasting temperature parameters on steady modes
+forecastInterval = 300;   // Interval for the forecasting temperature parameters on steady modes
 
 importSteady = TRUE;      // Import calculated steady mode points to the text file: TRUE - perform, FALSE - don't perform
 if ~importSteady

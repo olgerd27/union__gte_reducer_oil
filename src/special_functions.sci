@@ -81,7 +81,8 @@ function [reg_all, dtm_all] = calcSteadyPoints()
   
     //  Check if in the current archive doesn't exist the steady mode points
     if steadyIndex == 0
-      printf("[ERROR]: Steady mode points not found: archive #%i = %s, sectorLength = %i\n", fileIndex, filesArchive(fileIndex), sectorLength);
+      printf("[ERROR]: Steady mode points not found: archive #%i = %s, sectorLength = %i, sectorShift = %i\n", ..
+             fileIndex, filesArchive(fileIndex), sectorLength, sectorShift);
       printf("Continue? (1 - yes, 2 - no)\n");
       key = scanf("%i");
       if key == 1

@@ -28,10 +28,10 @@ diag_sys = RED_OIL;       // The PKSTD diagnostics system
 
 sectorLength = 1200;       // Length of splitting sectors
 sectorShift = 300;        // Shift of sector with length sectorLength in every main cycle iteration
-modelLength = 300;        // Length of the data model for performing of the forecasting temperature parameters on steady modes
+modelLength = 600;        // Length of the data model for performing of the forecasting temperature parameters on steady modes
 forecastInterval = 300;   // Interval for the forecasting temperature parameters on steady modes
 
-importSteady = FALSE;      // Import calculated steady mode points to the text file: TRUE - perform, FALSE - don't perform
+importSteady = TRUE;      // Import calculated steady mode points to the text file: TRUE - perform, FALSE - don't perform
 if ~importSteady
   if diag_sys == GTE_OIL
     UGt_strange = 10;     // Settings Gt strange for defining the steady modes of GTE's work
@@ -53,9 +53,9 @@ end
 plotGraphs = TRUE;          // Graphs plot: TRUE - perform, FALSE - don't perform
 plotGraphsSameWin = TRUE;   // Plot graphs, some quantity of that is placed on a same window: TRUE - perform, FALSE - don't perform
 
-exportSteadyPoints  = TRUE; // Export steady mode points in the text file: TRUE - perform, FALSE - don't perform
-exportResToTxtFile  = FALSE; // Export the oil's characteristics points values in a text file:  TRUE - perform, FALSE - don't perform
-exportResToImgFiles = FALSE; // Export plotted the oil's characters points values in a graphics files with "png" extension:
+exportSteadyPoints  = FALSE; // Export steady mode points in the text file: TRUE - perform, FALSE - don't perform
+exportResToTxtFile  = TRUE; // Export the oil's characteristics points values in a text file:  TRUE - perform, FALSE - don't perform
+exportResToImgFiles = TRUE; // Export plotted the oil's characters points values in a graphics files with "png" extension:
                             // TRUE - perform, FALSE - don't perform
 
 // The initial characteristics Ngte = f(p2) from a set of thermodynamics characteristics
@@ -124,8 +124,8 @@ if ~importSteady
     'mo_2009_2_26_15_42_48'; 'mo_2009_2_27_9_27_46'; 'mo_2009_3_4_15_16_16(soed)'; 'mo_2009_3_5_15_19_14';
     'mo_2009_3_6_10_35_11'; 'mo_2009_3_10_15_52_41(soed)'; 'mo_2009_3_12_14_44_25'];
 
-  path_archives = "/media/oleg/users/Oleg/work_zm/export/GTA_M56/Archivs/GTE_DA91_#2_3/GTE_DA91_#3";
-  //path_archives = "D:\work\GTA_M56\Archivs\GTE_DA91_#2_3\GTE_DA91_#3";
+  //path_archives = "/media/oleg/users/Oleg/work_zm/export/GTA_M56/Archivs/GTE_DA91_#2_3/GTE_DA91_#3";
+  path_archives = "D:\work\GTA_M56\Archivs\GTE_DA91_#2_3\GTE_DA91_#3";
 end
 
 // Names of oil's temperatures

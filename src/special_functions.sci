@@ -65,9 +65,15 @@ function [reg_all, dtm_all] = calcSteadyPoints()
         end
         //--------------------------------------------------------------------------------------------------------
         // calculate the 'tm' values in steady mode of work
+        modelFrom = arrayNumber - modelLength + 1;
+        modelTo = arrayNumber;
+        xModel = [modelFrom : modelTo]';
+        yModel = tm(modelFrom : modelTo, :);
         forecastTo = to + forecastInterval; // the argument-value for forecasting
-        xModel = [arrayNumber - modelLength + 1 : arrayNumber]';
-        yModel = tm(from : to, :);
+//        printf("modelFrom = %i, modelTo = %i\n", modelFrom, modelTo);
+//        printf("sizes: xModel = [%i, %i], yModel = [%i, %i]\n", ..
+//              size(xModel, 'r'), size(xModel, 'c'), size(yModel, 'r'), size(yModel, 'c'));
+//              abort;
         tm_steady(steadyIndex, :) = linearForecastValues(xModel, yModel, forecastTo)';
         
         // old version
